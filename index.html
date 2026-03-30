@@ -87,7 +87,7 @@
 
     .seal-wrap {
       position: absolute;
-      top: 50%;
+      top: calc(50% + 25px);
       left: 50%;
       transform: translate(-50%, -50%);
       width: 58px;
@@ -146,30 +146,22 @@
     }
 
     .note {
-      background: #fffdf9;
-      border: 1px solid #e8d5c4;
-      border-radius: 4px;
-      padding: 2.2rem 2.4rem 2rem;
-      width: 100%;
-      max-width: 360px;
+      background: url('paper_resized.png') center / 100% 100% no-repeat;
+      padding: 100px 115px;
+      width: 90vw;
+      max-width: 600px;
+      aspect-ratio: 1 / 1;
       position: relative;
       cursor: pointer;
-      box-shadow: 0 8px 40px rgba(180, 100, 80, 0.1);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
     }
 
-    .note-lines {
-      position: absolute;
-      inset: 0;
-      background-image: repeating-linear-gradient(
-        transparent,
-        transparent 31px,
-        #f0e4d8 31px,
-        #f0e4d8 32px
-      );
-      background-position: 0 56px;
-      border-radius: 4px;
-      opacity: 0.4;
-      pointer-events: none;
+    .note-body {
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      flex: 1;
     }
 
     .note-content { position: relative; z-index: 1; }
@@ -231,30 +223,10 @@
 
   <div class="scene">
     <div class="envelope-wrap" id="envWrap" onclick="openEnvelope()">
-      <svg class="env-svg" viewBox="0 0 340 215" xmlns="http://www.w3.org/2000/svg">
-        <rect x="2" y="2" width="336" height="211" rx="10" fill="#f5e6d8" stroke="#d4a898" stroke-width="1.5"/>
-        <polygon points="2,213 170,114 2,2" fill="#ead5c4" opacity="0.5"/>
-        <polygon points="338,213 170,114 338,2" fill="#e0c8b8" opacity="0.5"/>
-        <line x1="2" y1="213" x2="170" y2="114" stroke="#d4a898" stroke-width="0.8" opacity="0.5"/>
-        <line x1="338" y1="213" x2="170" y2="114" stroke="#d4a898" stroke-width="0.8" opacity="0.5"/>
-        <polygon points="2,2 338,2 170,118" fill="#f0d8c8" stroke="#d4a898" stroke-width="1.5" stroke-linejoin="round"/>
-        <line x1="2" y1="2" x2="170" y2="118" stroke="#d4a898" stroke-width="0.5" opacity="0.35"/>
-        <line x1="338" y1="2" x2="170" y2="118" stroke="#d4a898" stroke-width="0.5" opacity="0.35"/>
-      </svg>
+      <img src="envelope.png" class="env-svg" alt="envelope" />
 
       <div class="seal-wrap">
-        <svg viewBox="0 0 58 58" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="29" cy="29" r="29" fill="#b03020"/>
-          <circle cx="29" cy="29" r="26" fill="#992818"/>
-          <circle cx="29" cy="29" r="23" fill="#b03020"/>
-          <circle cx="29" cy="29" r="22" fill="none" stroke="#d45040" stroke-width="1.2" opacity="0.5"/>
-          <circle cx="29" cy="29" r="17" fill="none" stroke="#d45040" stroke-width="0.6" opacity="0.3"/>
-          <text x="29" y="34" text-anchor="middle"
-            font-family="'Cormorant Garamond', serif"
-            font-size="14"
-            fill="#fce8e0"
-            letter-spacing="1.5">SJ</text>
-        </svg>
+        <img src="seal.png" style="width:100%;height:100%;object-fit:contain;" alt="seal" />
       </div>
     </div>
 
@@ -263,8 +235,7 @@
 
   <div class="note-wrap" id="noteWrap" onclick="closeNote()">
     <div class="note">
-      <div class="note-lines"></div>
-      <div class="note-content">
+<div class="note-content">
         <div class="note-date" id="noteDate"></div>
         <div class="note-dear">little owl,</div>
         <div class="note-body">
