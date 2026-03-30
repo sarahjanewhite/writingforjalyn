@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>for Jalyn ♡</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=Cormorant+Garamond:ital,wght@0,400;1,400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(160deg, #fdf0eb 0%, #fce8f0 50%, #f9e4e8 100%);
+      font-family: 'Caveat', cursive;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        radial-gradient(circle at 20% 20%, rgba(255, 200, 200, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(255, 180, 210, 0.12) 0%, transparent 50%);
+      pointer-events: none;
+    }
+
+    .scene {
+      position: relative;
+      width: 100%;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      padding: 3rem 1.5rem;
+    }
+
+    .hearts-canvas {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .heart {
+      position: absolute;
+      top: -30px;
+      opacity: 0;
+      animation: heartFall linear infinite;
+    }
+
+    @keyframes heartFall {
+      0%   { opacity: 0; transform: translateY(0) scale(0.8); }
+      8%   { opacity: 0.55; }
+      90%  { opacity: 0.25; }
+      100% { opacity: 0; transform: translateY(110vh) scale(1.05); }
+    }
+
+    .envelope-wrap {
+      position: relative;
+      width: 340px;
+      max-width: 92vw;
+      cursor: pointer;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      z-index: 10;
+      transition: opacity 0.55s ease, transform 0.55s ease;
+    }
+
+    .envelope-wrap.hidden {
+      opacity: 0;
+      transform: scale(0.93);
+      pointer-events: none;
+    }
+
+    .env-svg { width: 100%; display: block; }
+
+    .seal-wrap {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 58px;
+      height: 58px;
+      animation: sealPulse 2.4s ease-in-out infinite;
+    }
+
+    @keyframes sealPulse {
+      0%, 100% { transform: translate(-50%, -50%) scale(1); }
+      50%       { transform: translate(-50%, -50%) scale(1.07); }
+    }
+
+    .hint {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 14px;
+      color: #c4967a;
+      margin-top: 1.6rem;
+      letter-spacing: 0.06em;
+      z-index: 10;
+      transition: opacity 0.4s ease;
+      opacity: 0;
+      animation: fadeUp 0.6s 0.5s ease forwards;
+    }
+
+    .hint.hidden {
+      opacity: 0 !important;
+      pointer-events: none;
+    }
+
+    .note-wrap {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      opacity: 0;
+      z-index: 20;
+      transition: opacity 0.5s ease;
+      padding: 1.5rem;
+    }
+
+    .note-wrap.visible {
+      pointer-events: auto;
+      opacity: 1;
+    }
+
+    .note-wrap.drifting {
+      animation: driftUp 0.85s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    @keyframes driftUp {
+      from { opacity: 0; transform: translateY(32px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .note {
+      background: #fffdf9;
+      border: 1px solid #e8d5c4;
+      border-radius: 4px;
+      padding: 2.2rem 2.4rem 2rem;
+      width: 100%;
+      max-width: 360px;
+      position: relative;
+      cursor: pointer;
+      box-shadow: 0 8px 40px rgba(180, 100, 80, 0.1);
+    }
+
+    .note-lines {
+      position: absolute;
+      inset: 0;
+      background-image: repeating-linear-gradient(
+        transparent,
+        transparent 31px,
+        #f0e4d8 31px,
+        #f0e4d8 32px
+      );
+      background-position: 0 56px;
+      border-radius: 4px;
+      opacity: 0.4;
+      pointer-events: none;
+    }
+
+    .note-content { position: relative; z-index: 1; }
+
+    .note-date {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 13px;
+      color: #c4967a;
+      text-align: right;
+      margin-bottom: 0.9rem;
+    }
+
+    .note-dear {
+      font-family: 'Caveat', cursive;
+      font-size: 26px;
+      color: #8b4c3a;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .note-body {
+      font-family: 'Caveat', cursive;
+      font-size: 21px;
+      color: #5c3828;
+      line-height: 1.85;
+      margin-bottom: 1.2rem;
+
+      /* ✏️  YOUR NOTE GOES HERE — update this whenever you want to send her something new */
+    }
+
+    .note-sign {
+      font-family: 'Caveat', cursive;
+      font-size: 23px;
+      color: #8b4c3a;
+      font-weight: 600;
+      text-align: right;
+    }
+
+    .note-tap-hint {
+      margin-top: 1.6rem;
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 11px;
+      color: #d4b090;
+      text-align: center;
+      letter-spacing: 0.04em;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="hearts-canvas" id="heartsCanvas"></div>
+
+  <div class="scene">
+    <div class="envelope-wrap" id="envWrap" onclick="openEnvelope()">
+      <svg class="env-svg" viewBox="0 0 340 215" xmlns="http://www.w3.org/2000/svg">
+        <rect x="2" y="2" width="336" height="211" rx="10" fill="#f5e6d8" stroke="#d4a898" stroke-width="1.5"/>
+        <polygon points="2,213 170,114 2,2" fill="#ead5c4" opacity="0.5"/>
+        <polygon points="338,213 170,114 338,2" fill="#e0c8b8" opacity="0.5"/>
+        <line x1="2" y1="213" x2="170" y2="114" stroke="#d4a898" stroke-width="0.8" opacity="0.5"/>
+        <line x1="338" y1="213" x2="170" y2="114" stroke="#d4a898" stroke-width="0.8" opacity="0.5"/>
+        <polygon points="2,2 338,2 170,118" fill="#f0d8c8" stroke="#d4a898" stroke-width="1.5" stroke-linejoin="round"/>
+        <line x1="2" y1="2" x2="170" y2="118" stroke="#d4a898" stroke-width="0.5" opacity="0.35"/>
+        <line x1="338" y1="2" x2="170" y2="118" stroke="#d4a898" stroke-width="0.5" opacity="0.35"/>
+      </svg>
+
+      <div class="seal-wrap">
+        <svg viewBox="0 0 58 58" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="29" cy="29" r="29" fill="#b03020"/>
+          <circle cx="29" cy="29" r="26" fill="#992818"/>
+          <circle cx="29" cy="29" r="23" fill="#b03020"/>
+          <circle cx="29" cy="29" r="22" fill="none" stroke="#d45040" stroke-width="1.2" opacity="0.5"/>
+          <circle cx="29" cy="29" r="17" fill="none" stroke="#d45040" stroke-width="0.6" opacity="0.3"/>
+          <text x="29" y="34" text-anchor="middle"
+            font-family="'Cormorant Garamond', serif"
+            font-size="14"
+            fill="#fce8e0"
+            letter-spacing="1.5">SJ</text>
+        </svg>
+      </div>
+    </div>
+
+    <div class="hint" id="hint">tap to open ♡</div>
+  </div>
+
+  <div class="note-wrap" id="noteWrap" onclick="closeNote()">
+    <div class="note">
+      <div class="note-lines"></div>
+      <div class="note-content">
+        <div class="note-date" id="noteDate"></div>
+        <div class="note-dear">little owl,</div>
+        <div class="note-body">
+          <!-- ✏️  YOUR NOTE GOES HERE — change this text whenever you want to send her something new -->
+          you push me to be a better person. i'm so lucky to be a part of your life. 🌷
+        </div>
+        <div class="note-sign">— sarah jane ♡</div>
+      </div>
+      <div class="note-tap-hint">tap to close</div>
+    </div>
+  </div>
+
+  <script>
+    const months = ['January','February','March','April','May','June',
+                    'July','August','September','October','November','December'];
+    const d = new Date();
+    document.getElementById('noteDate').textContent =
+      `${months[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
+
+    let busy = false;
+
+    function openEnvelope() {
+      if (busy) return;
+      busy = true;
+      document.getElementById('envWrap').classList.add('hidden');
+      document.getElementById('hint').classList.add('hidden');
+      const nw = document.getElementById('noteWrap');
+      nw.classList.add('drifting');
+      nw.addEventListener('animationend', () => {
+        nw.classList.remove('drifting');
+        nw.classList.add('visible');
+        busy = false;
+      }, { once: true });
+    }
+
+    function closeNote() {
+      if (busy) return;
+      busy = true;
+      const nw = document.getElementById('noteWrap');
+      nw.classList.remove('visible');
+      setTimeout(() => {
+        document.getElementById('envWrap').classList.remove('hidden');
+        document.getElementById('hint').classList.remove('hidden');
+        busy = false;
+      }, 520);
+    }
+
+    const canvas = document.getElementById('heartsCanvas');
+    const colors = ['#f5b8c8','#f9c8d4','#f0a8b8','#fcd0dc','#e8a0b4','#f4c0cc'];
+    for (let i = 0; i < 28; i++) {
+      const el = document.createElement('div');
+      el.className = 'heart';
+      el.textContent = '♡';
+      el.style.left = `${Math.random() * 100}%`;
+      el.style.fontSize = `${7 + Math.random() * 11}px`;
+      el.style.color = colors[Math.floor(Math.random() * colors.length)];
+      el.style.animationDuration = `${7 + Math.random() * 9}s`;
+      el.style.animationDelay = `${Math.random() * 12}s`;
+      canvas.appendChild(el);
+    }
+  </script>
+</body>
+</html>
