@@ -359,45 +359,82 @@
     const canvas = document.getElementById('heartsCanvas');
     const colors = ['#f5b8c8','#f9c8d4','#f0a8b8','#fcd0dc','#e8a0b4','#f4c0cc'];
 
+    const COLS = 40;
+    const MAX_PILE_FRAC = 0.38;
+    const SETTLE_LIFE = 9000;
+    const FADE_TIME  = 2500;
+
+    let pileHeights = null;
+
+    function initPile() {
+      pileHeights = new Array(COLS).fill(0);
+    }
+
+    function colFor(x) {
+      return Math.max(0, Math.min(COLS - 1, Math.floor((x / window.innerWidth) * COLS)));
+    }
+
+    function floorY(x) {
+      return window.innerHeight - pileHeights[colFor(x)];
+    }
+
+    function bumpPile(x, size, sign) {
+      const col = colFor(x);
+      const bump = size * 0.65;
+      const maxPile = window.innerHeight * MAX_PILE_FRAC;
+      [[col-1, 0.3],[col, 1],[col+1, 0.3]].forEach(([c, w]) => {
+        if (c >= 0 && c < COLS)
+          pileHeights[c] = Math.max(0, Math.min(maxPile, pileHeights[c] + sign * bump * w));
+      });
+    }
+
+    function landHeart(h) {
+      bumpPile(h.x, h.size, 1);
+      h.y = floorY(h.x);
+      h.state = 'settled';
+      h.settledAt = performance.now();
+    }
+
     const hearts = [];
     for (let i = 0; i < 55; i++) {
       const el = document.createElement('div');
       el.className = 'heart';
       el.textContent = '♥';
-      el.style.fontSize = `${7 + Math.random() * 11}px`;
+      const size = 7 + Math.random() * 11;
+      el.style.fontSize = `${size}px`;
       el.style.color = colors[Math.floor(Math.random() * colors.length)];
       canvas.appendChild(el);
       hearts.push({
-        el,
+        el, size,
         x: Math.random() * window.innerWidth,
-        y: Math.random() * window.innerHeight, // scatter on load
+        y: -20,
         speed: 0.6 + Math.random() * 1.2,
         delay: Math.random() * 8000,
         born: false,
+        state: 'falling',
       });
     }
 
-    let wind = 0;
-    let smoothWind = 0;
+    let wind = 0, smoothWind = 0;
 
     function attachGyro() {
       window.addEventListener('deviceorientation', (e) => {
-        wind = (e.gamma || 0) / 90; // -1 to 1
+        wind = (e.gamma || 0) / 90;
       });
     }
 
     if (typeof DeviceOrientationEvent !== 'undefined' &&
         typeof DeviceOrientationEvent.requestPermission === 'function') {
-      // iOS 13+ — request on first interaction
       document.addEventListener('click', function reqPerm() {
-        DeviceOrientationEvent.requestPermission().then(state => {
-          if (state === 'granted') attachGyro();
+        DeviceOrientationEvent.requestPermission().then(s => {
+          if (s === 'granted') attachGyro();
         }).catch(() => {});
-        document.removeEventListener('click', reqPerm);
       }, { once: true });
     } else {
       attachGyro();
     }
+
+    window.addEventListener('resize', initPile);
 
     let lastTime = null;
     function animate(ts) {
@@ -405,12 +442,43 @@
       const dt = Math.min(ts - lastTime, 50);
       lastTime = ts;
 
-      smoothWind += (wind - smoothWind) * 0.04;
+      if (!pileHeights) initPile();
 
+      smoothWind += (wind - smoothWind) * 0.04;
       const vw = window.innerWidth;
       const vh = window.innerHeight;
 
       for (const h of hearts) {
+
+        // — settled: wait, then start fading —
+        if (h.state === 'settled') {
+          if (ts - h.settledAt > SETTLE_LIFE) {
+            h.state = 'fading';
+            h.fadeStart = ts;
+          } else {
+            h.el.style.opacity = 0.55;
+            h.el.style.transform = `translate(${h.x}px, ${h.y}px)`;
+          }
+          continue;
+        }
+
+        // — fading: shrink opacity then recycle —
+        if (h.state === 'fading') {
+          const p = (ts - h.fadeStart) / FADE_TIME;
+          if (p >= 1) {
+            bumpPile(h.x, h.size, -1);
+            h.state = 'falling';
+            h.y = -20;
+            h.x = Math.random() * vw;
+            h.speed = 0.6 + Math.random() * 1.2;
+          } else {
+            h.el.style.opacity = 0.55 * (1 - p);
+            h.el.style.transform = `translate(${h.x}px, ${h.y}px)`;
+          }
+          continue;
+        }
+
+        // — falling —
         if (!h.born) {
           if (ts < h.delay) continue;
           h.born = true;
@@ -418,25 +486,17 @@
 
         h.y += h.speed * (dt / 16);
         h.x += smoothWind * 2.5 * (dt / 16);
-
-        // wrap horizontally
         if (h.x < -20) h.x = vw + 20;
         if (h.x > vw + 20) h.x = -20;
 
-        // reset when off bottom
-        if (h.y > vh + 30) {
-          h.y = -20;
-          h.x = Math.random() * vw;
-          h.speed = 0.6 + Math.random() * 1.2;
+        const floor = floorY(h.x);
+        if (h.y >= floor) {
+          landHeart(h);
+          continue;
         }
 
-        // fade in near top, fade out near bottom
         const p = h.y / vh;
-        let opacity = 0;
-        if (p < 0.08) opacity = (p / 0.08) * 0.5;
-        else if (p < 0.85) opacity = 0.5 - ((p - 0.08) / 0.77) * 0.25;
-        else opacity = Math.max(0, (1 - p) / 0.15 * 0.25);
-
+        const opacity = p < 0.08 ? (p / 0.08) * 0.5 : 0.5;
         h.el.style.transform = `translate(${h.x}px, ${h.y}px)`;
         h.el.style.opacity = opacity;
       }
