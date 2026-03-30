@@ -364,10 +364,10 @@
 
     const canvas = document.getElementById('heartsCanvas');
     const colors = ['#f5b8c8','#f9c8d4','#f0a8b8','#fcd0dc','#e8a0b4','#f4c0cc'];
-    for (let i = 0; i < 28; i++) {
+    for (let i = 0; i < 55; i++) {
       const el = document.createElement('div');
       el.className = 'heart';
-      el.textContent = '♡';
+      el.textContent = '♥';
       el.style.left = `${Math.random() * 100}%`;
       el.style.fontSize = `${7 + Math.random() * 11}px`;
       el.style.color = colors[Math.floor(Math.random() * colors.length)];
