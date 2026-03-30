@@ -56,16 +56,10 @@
 
     .heart {
       position: absolute;
-      top: -30px;
+      top: 0;
+      left: 0;
       opacity: 0;
-      animation: heartFall linear infinite;
-    }
-
-    @keyframes heartFall {
-      0%   { opacity: 0; transform: translateY(0) scale(0.8); }
-      8%   { opacity: 0.55; }
-      90%  { opacity: 0.25; }
-      100% { opacity: 0; transform: translateY(110vh) scale(1.05); }
+      pointer-events: none;
     }
 
     .envelope-wrap {
@@ -364,17 +358,92 @@
 
     const canvas = document.getElementById('heartsCanvas');
     const colors = ['#f5b8c8','#f9c8d4','#f0a8b8','#fcd0dc','#e8a0b4','#f4c0cc'];
+
+    const hearts = [];
     for (let i = 0; i < 55; i++) {
       const el = document.createElement('div');
       el.className = 'heart';
       el.textContent = '♥';
-      el.style.left = `${Math.random() * 100}%`;
       el.style.fontSize = `${7 + Math.random() * 11}px`;
       el.style.color = colors[Math.floor(Math.random() * colors.length)];
-      el.style.animationDuration = `${7 + Math.random() * 9}s`;
-      el.style.animationDelay = `${Math.random() * 12}s`;
       canvas.appendChild(el);
+      hearts.push({
+        el,
+        x: Math.random() * window.innerWidth,
+        y: Math.random() * window.innerHeight, // scatter on load
+        speed: 0.6 + Math.random() * 1.2,
+        delay: Math.random() * 8000,
+        born: false,
+      });
     }
+
+    let wind = 0;
+    let smoothWind = 0;
+
+    function attachGyro() {
+      window.addEventListener('deviceorientation', (e) => {
+        wind = (e.gamma || 0) / 90; // -1 to 1
+      });
+    }
+
+    if (typeof DeviceOrientationEvent !== 'undefined' &&
+        typeof DeviceOrientationEvent.requestPermission === 'function') {
+      // iOS 13+ — request on first interaction
+      document.addEventListener('click', function reqPerm() {
+        DeviceOrientationEvent.requestPermission().then(state => {
+          if (state === 'granted') attachGyro();
+        }).catch(() => {});
+        document.removeEventListener('click', reqPerm);
+      }, { once: true });
+    } else {
+      attachGyro();
+    }
+
+    let lastTime = null;
+    function animate(ts) {
+      if (!lastTime) lastTime = ts;
+      const dt = Math.min(ts - lastTime, 50);
+      lastTime = ts;
+
+      smoothWind += (wind - smoothWind) * 0.04;
+
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+
+      for (const h of hearts) {
+        if (!h.born) {
+          if (ts < h.delay) continue;
+          h.born = true;
+        }
+
+        h.y += h.speed * (dt / 16);
+        h.x += smoothWind * 2.5 * (dt / 16);
+
+        // wrap horizontally
+        if (h.x < -20) h.x = vw + 20;
+        if (h.x > vw + 20) h.x = -20;
+
+        // reset when off bottom
+        if (h.y > vh + 30) {
+          h.y = -20;
+          h.x = Math.random() * vw;
+          h.speed = 0.6 + Math.random() * 1.2;
+        }
+
+        // fade in near top, fade out near bottom
+        const p = h.y / vh;
+        let opacity = 0;
+        if (p < 0.08) opacity = (p / 0.08) * 0.5;
+        else if (p < 0.85) opacity = 0.5 - ((p - 0.08) / 0.77) * 0.25;
+        else opacity = Math.max(0, (1 - p) / 0.15 * 0.25);
+
+        h.el.style.transform = `translate(${h.x}px, ${h.y}px)`;
+        h.el.style.opacity = opacity;
+      }
+
+      requestAnimationFrame(animate);
+    }
+    requestAnimationFrame(animate);
   </script>
 </body>
 </html>
