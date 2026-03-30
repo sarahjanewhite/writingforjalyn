@@ -210,6 +210,26 @@
       letter-spacing: 0.04em;
     }
 
+    .note-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 1.6rem;
+    }
+
+    .save-btn {
+      background: none;
+      border: 1px solid #d4b090;
+      border-radius: 20px;
+      padding: 4px 14px;
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 13px;
+      color: #c4967a;
+      cursor: pointer;
+      letter-spacing: 0.04em;
+    }
+
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(6px); }
       to   { opacity: 1; transform: translateY(0); }
@@ -243,10 +263,14 @@
         </div>
         <div class="note-sign">— sarah jane</div>
       </div>
-      <div class="note-tap-hint">tap to close</div>
+      <div class="note-actions">
+        <div class="note-tap-hint">tap to close</div>
+        <button class="save-btn" onclick="event.stopPropagation(); saveNote()">save ♡</button>
+      </div>
     </div>
   </div>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script>
     const months = ['January','February','March','April','May','June',
                     'July','August','September','October','November','December'];
@@ -268,6 +292,17 @@
         nw.classList.add('visible');
         busy = false;
       }, { once: true });
+    }
+
+    function saveNote() {
+      const note = document.querySelector('.note');
+      html2canvas(note, { useCORS: true, scale: 2 }).then(canvas => {
+        const link = document.createElement('a');
+        const d = new Date();
+        link.download = `note-${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      });
     }
 
     function closeNote() {
