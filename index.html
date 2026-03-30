@@ -210,11 +210,11 @@
       letter-spacing: 0.04em;
     }
 
-    .note-actions {
+    .note-container {
       display: flex;
-      justify-content: space-between;
+      flex-direction: column;
       align-items: center;
-      margin-top: 1.6rem;
+      gap: 2.6rem;
     }
 
     .save-btn {
@@ -253,6 +253,7 @@
   </div>
 
   <div class="note-wrap" id="noteWrap" onclick="closeNote()">
+    <div class="note-container">
     <div class="note">
 <div class="note-content">
         <div class="note-date" id="noteDate"></div>
@@ -263,10 +264,9 @@
         </div>
         <div class="note-sign">— sarah jane</div>
       </div>
-      <div class="note-actions">
-        <div class="note-tap-hint">tap to close</div>
-        <button class="save-btn" onclick="event.stopPropagation(); saveNote()">save note</button>
-      </div>
+      <div class="note-tap-hint">tap to close</div>
+    </div>
+    <button class="save-btn" onclick="event.stopPropagation(); saveNote()">save note</button>
     </div>
   </div>
 
