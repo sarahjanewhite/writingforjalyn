@@ -383,35 +383,11 @@
       });
     }
 
-    let wind = 0;
-    let smoothWind = 0;
-
-    function attachGyro() {
-      window.addEventListener('deviceorientation', (e) => {
-        wind = (e.gamma || 0) / 90; // -1 to 1
-      });
-    }
-
-    if (typeof DeviceOrientationEvent !== 'undefined' &&
-        typeof DeviceOrientationEvent.requestPermission === 'function') {
-      // iOS 13+ — request on first interaction
-      document.addEventListener('click', function reqPerm() {
-        DeviceOrientationEvent.requestPermission().then(state => {
-          if (state === 'granted') attachGyro();
-        }).catch(() => {});
-        document.removeEventListener('click', reqPerm);
-      }, { once: true });
-    } else {
-      attachGyro();
-    }
-
     let lastTime = null;
     function animate(ts) {
       if (!lastTime) lastTime = ts;
       const dt = Math.min(ts - lastTime, 50);
       lastTime = ts;
-
-      smoothWind += (wind - smoothWind) * 0.04;
 
       const vw = window.innerWidth;
       const vh = window.innerHeight;
@@ -423,7 +399,6 @@
         }
 
         h.y += h.speed * (dt / 16);
-        h.x += smoothWind * 2.5 * (dt / 16);
 
         // wrap horizontally
         if (h.x < -20) h.x = vw + 20;
