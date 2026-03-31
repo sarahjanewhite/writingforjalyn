@@ -58,11 +58,19 @@ function changeNote(dir) {
   currentNoteIdx = Math.max(0, Math.min(notes.length - 1, currentNoteIdx + dir));
   applyTilt();
   loadNote(currentNoteIdx);
+  playSound();
 }
 
 // -------------------------
 //  Envelope open / close
 // -------------------------
+
+const crumple = new Audio('crumple.mp3');
+
+function playSound() {
+  crumple.currentTime = 0;
+  crumple.play().catch(() => {});
+}
 
 let busy = false;
 
@@ -72,6 +80,7 @@ function openEnvelope() {
   currentNoteIdx = 0;
   applyTilt();
   loadNote(0);
+  playSound();
   document.getElementById('envWrap').classList.add('hidden');
   document.getElementById('hint').classList.add('hidden');
   const nw = document.getElementById('noteWrap');
