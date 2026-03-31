@@ -283,20 +283,6 @@ body::before {
   text-align: right;
 }
 
-.envelope-day {
-  position: absolute;
-  top: calc(50% + 68px);
-  left: 50%;
-  transform: translateX(-50%);
-  font-family: 'Cormorant Garamond', serif;
-  font-style: italic;
-  font-size: 11px;
-  color: #8b4c3a;
-  letter-spacing: 0.04em;
-  pointer-events: none;
-  user-select: none;
-  white-space: nowrap;
-}
 
 .note-nav {
   display: none;

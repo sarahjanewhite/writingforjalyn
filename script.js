@@ -21,14 +21,6 @@ const notes = [
 //  Day counter
 // -------------------------
 
-const startDate = new Date('2026-03-10');
-
-function getDayCount() {
-  const today = new Date();
-  return Math.max(1, Math.floor((today - startDate) / (1000 * 60 * 60 * 24)) + 1);
-}
-
-document.getElementById('dayCounter').textContent = `day ${getDayCount()} with you`;
 
 // -------------------------
 //  Note loading & navigation
