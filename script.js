@@ -68,14 +68,6 @@ function changeNote(dir) {
 //  Envelope open / close
 // -------------------------
 
-const fart = new Audio('boobah_fart.mp3');
-fart.preload = 'auto';
-
-// iOS requires a user gesture to unlock audio — prime it on first tap
-document.addEventListener('touchstart', function unlock() {
-  fart.load();
-  document.removeEventListener('touchstart', unlock);
-}, { once: true });
 
 let busy = false;
 
@@ -85,8 +77,6 @@ function openEnvelope() {
   currentNoteIdx = 0;
   applyTilt();
   loadNote(0);
-  fart.currentTime = 0;
-  fart.play().catch(() => {});
   document.getElementById('envWrap').classList.add('hidden');
   document.getElementById('hint').classList.add('hidden');
   const nw = document.getElementById('noteWrap');
