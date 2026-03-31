@@ -5,10 +5,6 @@
 const notes = [
   {
     date: "March 31, 2026",
-    body: `Mmm!`
-  },
-  {
-    date: "March 31, 2026",
     body: `you are the smartest woman i know. i know you'll do well on your exam. i love you. ♥`
   },
   {
