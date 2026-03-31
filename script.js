@@ -65,6 +65,13 @@ function changeNote(dir) {
 // -------------------------
 
 const fart = new Audio('boobah_fart.mp3');
+fart.preload = 'auto';
+
+// iOS requires a user gesture to unlock audio — prime it on first tap
+document.addEventListener('touchstart', function unlock() {
+  fart.load();
+  document.removeEventListener('touchstart', unlock);
+}, { once: true });
 
 let busy = false;
 
