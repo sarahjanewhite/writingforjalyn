@@ -4,6 +4,10 @@
 // — older notes: hardcode `day` so it stays fixed to when you wrote it
 const notes = [
   {
+    date: "March 31, 2026",
+    body: `you are the smartest woman i know. i know you'll do well on your exam. i love you. ♥`
+  },
+  {
     date: "March 30, 2026",
     body: `you are the most important person to me in any room.`
   },
