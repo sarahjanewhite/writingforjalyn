@@ -64,6 +64,8 @@ function changeNote(dir) {
 //  Envelope open / close
 // -------------------------
 
+const fart = new Audio('boobah_fart.mp3');
+
 let busy = false;
 
 function openEnvelope() {
@@ -72,6 +74,8 @@ function openEnvelope() {
   currentNoteIdx = 0;
   applyTilt();
   loadNote(0);
+  fart.currentTime = 0;
+  fart.play().catch(() => {});
   document.getElementById('envWrap').classList.add('hidden');
   document.getElementById('hint').classList.add('hidden');
   const nw = document.getElementById('noteWrap');
