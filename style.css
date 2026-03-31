@@ -276,14 +276,19 @@ body::before {
   text-align: right;
 }
 
-.day-counter {
+.envelope-day {
+  position: absolute;
+  top: calc(50% + 68px);
+  left: 50%;
+  transform: translateX(-50%);
   font-family: 'Cormorant Garamond', serif;
   font-style: italic;
   font-size: 11px;
-  color: #d4b090;
-  text-align: right;
-  margin-top: 0.4rem;
+  color: #8b4c3a;
   letter-spacing: 0.04em;
+  pointer-events: none;
+  user-select: none;
+  white-space: nowrap;
 }
 
 .note-nav {

@@ -25,6 +25,7 @@
     <div class="envelope-wrap" id="envWrap" onclick="openEnvelope()">
       <img src="envelope.png" class="env-svg" alt="envelope" />
       <div class="envelope-to">to my love</div>
+      <div class="envelope-day" id="dayCounter"></div>
       <div class="seal-wrap">
         <div class="seal">
           <span class="seal-initials">SJ</span>
@@ -45,7 +46,6 @@
             <div class="note-dear">little owl,</div>
             <div class="note-body" id="noteBody"></div>
             <div class="note-sign">— sarah jane</div>
-            <div class="day-counter" id="dayCounter"></div>
           </div>
           <div class="note-nav" id="noteNav">
             <button class="note-nav-btn" id="prevBtn" onclick="event.stopPropagation(); changeNote(-1)">←</button>

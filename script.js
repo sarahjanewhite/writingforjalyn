@@ -24,6 +24,8 @@ function getDayCount() {
   return Math.max(1, Math.floor((today - startDate) / (1000 * 60 * 60 * 24)) + 1);
 }
 
+document.getElementById('dayCounter').textContent = `day ${getDayCount()} with you`;
+
 // -------------------------
 //  Note loading & navigation
 // -------------------------
@@ -34,13 +36,6 @@ function loadNote(idx) {
   const n = notes[idx];
   document.getElementById('noteBody').textContent = n.body;
   document.getElementById('noteDate').textContent = n.date;
-  const counter = document.getElementById('dayCounter');
-  if (idx === 0) {
-    counter.textContent = `day ${getDayCount()} with you ♡`;
-    counter.style.display = '';
-  } else {
-    counter.style.display = 'none';
-  }
 
   const total = notes.length;
   const nav = document.getElementById('noteNav');
