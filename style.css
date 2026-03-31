@@ -77,6 +77,19 @@ body::before {
 
 .env-svg { width: 100%; display: block; }
 
+.envelope-to {
+  position: absolute;
+  top: calc(38% - 25px);
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Caveat', cursive;
+  font-size: 22px;
+  color: #8b4c3a;
+  letter-spacing: 0.04em;
+  pointer-events: none;
+  user-select: none;
+}
+
 /* -------------------------
    Wax seal
 ------------------------- */
