@@ -1,5 +1,4 @@
 // ✏️ ADD NEW NOTES TO THE TOP of this array whenever you write a new one
-// ✏️ ADD NEW NOTES TO THE TOP of this array whenever you write a new one
 // — newest note: omit `day` and it will calculate automatically
 // — older notes: hardcode `day` so it stays fixed to when you wrote it
 const notes = [
