@@ -159,7 +159,7 @@
         const { sha, content } = await res.json();
 
         // decode, prepend new note, re-encode
-        const current = JSON.parse(atob(content.replace(/\n/g, '')));
+        const current = JSON.parse(decodeURIComponent(escape(atob(content.replace(/\n/g, '')))));
         const updated = [{ date: getDate(), body }, ...current];
         const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(updated, null, 2) + '\n')));
 
