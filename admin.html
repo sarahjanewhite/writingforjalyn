@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>new note — sj</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=Cormorant+Garamond:ital,wght@0,400;1,400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(160deg, #fdf0eb 0%, #fce8f0 50%, #f9e4e8 100%);
+      font-family: 'Cormorant Garamond', serif;
+      padding: 2rem 1.5rem;
+    }
+
+    .card {
+      background: #fffef5;
+      width: 100%;
+      max-width: 380px;
+      padding: 2.4rem 2.2rem 2rem;
+      box-shadow: 2px 4px 16px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      font-family: 'Caveat', cursive;
+      font-size: 28px;
+      color: #8b4c3a;
+      margin-bottom: 1.8rem;
+      font-weight: 600;
+    }
+
+    label {
+      display: block;
+      font-style: italic;
+      font-size: 13px;
+      color: #c4967a;
+      margin-bottom: 0.4rem;
+      letter-spacing: 0.04em;
+    }
+
+    input, textarea {
+      width: 100%;
+      border: 1px solid #e8d5c8;
+      background: #fffef5;
+      padding: 10px 12px;
+      font-family: 'Caveat', cursive;
+      font-size: 20px;
+      color: #5c3828;
+      outline: none;
+      margin-bottom: 1.4rem;
+      transition: border-color 0.2s;
+    }
+
+    input:focus, textarea:focus {
+      border-color: #c4967a;
+    }
+
+    input[type="password"] {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 15px;
+      letter-spacing: 0.1em;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 130px;
+      line-height: 1.7;
+    }
+
+    .submit-btn {
+      width: 100%;
+      background: #c4967a;
+      border: none;
+      padding: 12px;
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 17px;
+      color: #fffef5;
+      cursor: pointer;
+      letter-spacing: 0.06em;
+      box-shadow: 0 2px 8px rgba(196,150,122,0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.2s;
+    }
+
+    .submit-btn:disabled { opacity: 0.5; cursor: default; }
+
+    .status {
+      margin-top: 1.2rem;
+      font-style: italic;
+      font-size: 13px;
+      text-align: center;
+      min-height: 20px;
+      letter-spacing: 0.04em;
+    }
+
+    .status.success { color: #8b4c3a; }
+    .status.error   { color: #c0392b; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>write a new note ♡</h1>
+
+    <label>github token</label>
+    <input type="password" id="token" placeholder="ghp_..." autocomplete="off" />
+
+    <label>note</label>
+    <textarea id="body" placeholder="write something sweet..."></textarea>
+
+    <button class="submit-btn" id="submitBtn" onclick="submitNote()">send it</button>
+    <div class="status" id="status"></div>
+  </div>
+
+  <script>
+    const REPO  = 'sarahjanewhite/writingforjalyn';
+    const FILE  = 'notes.json';
+    const API   = `https://api.github.com/repos/${REPO}/contents/${FILE}`;
+
+    // restore saved token
+    const tokenEl = document.getElementById('token');
+    tokenEl.value = localStorage.getItem('sj_gh_token') || '';
+
+    function getDate() {
+      const months = ['January','February','March','April','May','June',
+                      'July','August','September','October','November','December'];
+      const d = new Date();
+      return `${months[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
+    }
+
+    async function submitNote() {
+      const token = tokenEl.value.trim();
+      const body  = document.getElementById('body').value.trim();
+      const btn   = document.getElementById('submitBtn');
+      const status = document.getElementById('status');
+
+      if (!token) return setStatus('please enter your github token', 'error');
+      if (!body)  return setStatus('note is empty!', 'error');
+
+      localStorage.setItem('sj_gh_token', token);
+      btn.disabled = true;
+      setStatus('sending...', '');
+
+      try {
+        // get current file + sha
+        const res = await fetch(API, {
+          headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json' }
+        });
+        if (!res.ok) throw new Error('could not fetch notes — check your token');
+        const { sha, content } = await res.json();
+
+        // decode, prepend new note, re-encode
+        const current = JSON.parse(atob(content.replace(/\n/g, '')));
+        const updated = [{ date: getDate(), body }, ...current];
+        const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(updated, null, 2) + '\n')));
+
+        // commit
+        const put = await fetch(API, {
+          method: 'PUT',
+          headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json', 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: `add note — ${getDate()}`, content: encoded, sha })
+        });
+        if (!put.ok) throw new Error('commit failed — check token permissions');
+
+        document.getElementById('body').value = '';
+        setStatus('note sent ♡', 'success');
+      } catch (e) {
+        setStatus(e.message, 'error');
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    function setStatus(msg, type) {
+      const el = document.getElementById('status');
+      el.textContent = msg;
+      el.className = `status ${type}`;
+    }
+  </script>
+</body>
+</html>

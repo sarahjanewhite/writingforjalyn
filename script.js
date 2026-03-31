@@ -1,20 +1,9 @@
-// ✏️ ADD NEW NOTES TO THE TOP of this array whenever you write a new one
-// — newest note: omit `day` and it will calculate automatically
-// — older notes: hardcode `day` so it stays fixed to when you wrote it
-const notes = [
-  {
-    date: "March 31, 2026",
-    body: `you are the smartest woman i know. i know you'll do well on your exam. i love you. ♥`
-  },
-  {
-    date: "March 30, 2026",
-    body: `you are the most important person to me in any room.`
-  },
-  {
-    date: "March 30, 2026",
-    body: `you push me to be a better person. i'm so lucky to be a part of your life. 🌷`
-  }
-];
+let notes = [];
+
+fetch('notes.json?t=' + Date.now())
+  .then(r => r.json())
+  .then(data => { notes = data; })
+  .catch(() => { notes = [{ date: '', body: 'could not load notes.' }]; });
 
 // -------------------------
 //  Day counter
