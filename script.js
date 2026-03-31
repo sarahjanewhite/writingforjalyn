@@ -61,6 +61,27 @@ function changeNote(dir) {
 }
 
 // -------------------------
+//  Swipe to navigate notes
+// -------------------------
+
+let swipeStartX = null;
+
+document.addEventListener('touchstart', (e) => {
+  const note = document.getElementById('mainNote');
+  if (note && note.contains(e.target)) {
+    swipeStartX = e.touches[0].clientX;
+  }
+}, { passive: true });
+
+document.addEventListener('touchend', (e) => {
+  if (swipeStartX === null) return;
+  const dx = e.changedTouches[0].clientX - swipeStartX;
+  swipeStartX = null;
+  if (Math.abs(dx) < 50) return;
+  changeNote(dx < 0 ? 1 : -1); // swipe left = older, swipe right = newer
+});
+
+// -------------------------
 //  Envelope open / close
 // -------------------------
 
