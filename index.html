@@ -196,7 +196,6 @@
       width: 100%;
       max-width: 360px;
       position: relative;
-      cursor: pointer;
       box-shadow: 2px 4px 12px rgba(0,0,0,0.12);
     }
 
@@ -253,6 +252,63 @@
       letter-spacing: 0.04em;
     }
 
+    .note-stack {
+      position: relative;
+      width: 100%;
+      max-width: 360px;
+    }
+
+    .note-behind {
+      position: absolute;
+      inset: 0;
+      background: #fffef5;
+      box-shadow: 2px 4px 12px rgba(0,0,0,0.10);
+      pointer-events: none;
+      display: none;
+    }
+
+    .note-behind-1 { transform: rotate(2.5deg) translateY(5px); z-index: -1; }
+    .note-behind-2 { transform: rotate(-2deg) translateY(9px);  z-index: -2; }
+
+    .day-counter {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 11px;
+      color: #d4b090;
+      text-align: right;
+      margin-top: 0.4rem;
+      letter-spacing: 0.04em;
+    }
+
+    .note-nav {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 0.9rem;
+      margin-top: 1rem;
+    }
+
+    .note-nav-btn {
+      background: none;
+      border: none;
+      font-size: 16px;
+      color: #c4967a;
+      cursor: pointer;
+      padding: 0 4px;
+      transition: opacity 0.2s;
+      line-height: 1;
+    }
+
+    .note-nav-btn:disabled { opacity: 0.22; cursor: default; }
+
+    .note-nav-counter {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 12px;
+      color: #d4b090;
+      letter-spacing: 0.04em;
+    }
+
     .note-container {
       display: flex;
       flex-direction: column;
@@ -299,35 +355,89 @@
 
   <div class="note-wrap" id="noteWrap" onclick="closeNote()">
     <div class="note-container">
-    <div class="note">
-<div class="note-content">
-        <div class="note-date" id="noteDate"></div>
-        <div class="note-dear">little owl,</div>
-        <div class="note-body">
-          <!-- ✏️  YOUR NOTE GOES HERE — change this text whenever you want to send her something new -->
-          you push me to be a better person. i'm so lucky to be a part of your life. 🌷
+      <div class="note-stack">
+        <div class="note-behind note-behind-2" id="noteBehind2"></div>
+        <div class="note-behind note-behind-1" id="noteBehind1"></div>
+        <div class="note" id="mainNote" onclick="event.stopPropagation()">
+          <div class="note-content">
+            <div class="note-date" id="noteDate"></div>
+            <div class="note-dear">little owl,</div>
+            <div class="note-body" id="noteBody"></div>
+            <div class="note-sign">— sarah jane</div>
+            <div class="day-counter" id="dayCounter"></div>
+          </div>
+          <div class="note-nav" id="noteNav">
+            <button class="note-nav-btn" id="prevBtn" onclick="event.stopPropagation(); changeNote(-1)">←</button>
+            <span class="note-nav-counter" id="noteCounter"></span>
+            <button class="note-nav-btn" id="nextBtn" onclick="event.stopPropagation(); changeNote(1)">→</button>
+          </div>
+          <div class="note-tap-hint">tap outside to close</div>
         </div>
-        <div class="note-sign">— sarah jane</div>
       </div>
-      <div class="note-tap-hint">tap to close</div>
-    </div>
-    <button class="save-btn" onclick="event.stopPropagation(); saveNote()">save note</button>
+      <button class="save-btn" onclick="event.stopPropagation(); saveNote()">save note</button>
     </div>
   </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script>
-    const months = ['January','February','March','April','May','June',
-                    'July','August','September','October','November','December'];
-    const d = new Date();
-    document.getElementById('noteDate').textContent =
-      `${months[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
+    // ✏️ ADD NEW NOTES TO THE TOP of this array whenever you write a new one
+    const notes = [
+      {
+        date: "March 30, 2026",
+        body: `you push me to be a better person. i'm so lucky to be a part of your life. 🌷`
+      }
+    ];
+
+    const startDate = new Date('2026-03-10');
+
+    function getDayCount() {
+      const today = new Date();
+      return Math.max(1, Math.floor((today - startDate) / (1000 * 60 * 60 * 24)) + 1);
+    }
+
+    let currentNoteIdx = 0;
+
+    function loadNote(idx) {
+      const n = notes[idx];
+      document.getElementById('noteBody').textContent = n.body;
+      document.getElementById('noteDate').textContent = n.date;
+      document.getElementById('dayCounter').textContent = `day ${getDayCount()} ♡`;
+
+      const total = notes.length;
+      const nav = document.getElementById('noteNav');
+      if (total > 1) {
+        nav.style.display = 'flex';
+        document.getElementById('noteCounter').textContent = `${idx + 1} / ${total}`;
+        document.getElementById('prevBtn').disabled = idx === 0;
+        document.getElementById('nextBtn').disabled = idx === total - 1;
+      } else {
+        nav.style.display = 'none';
+      }
+
+      const remaining = total - idx - 1;
+      document.getElementById('noteBehind1').style.display = remaining >= 1 ? 'block' : 'none';
+      document.getElementById('noteBehind2').style.display = remaining >= 2 ? 'block' : 'none';
+    }
+
+    function applyTilt() {
+      const tilt = (Math.random() * 6 - 3);
+      document.getElementById('mainNote').style.transform = `rotate(${tilt}deg)`;
+    }
+
+    function changeNote(dir) {
+      currentNoteIdx = Math.max(0, Math.min(notes.length - 1, currentNoteIdx + dir));
+      applyTilt();
+      loadNote(currentNoteIdx);
+    }
 
     let busy = false;
 
     function openEnvelope() {
       if (busy) return;
       busy = true;
+      currentNoteIdx = 0;
+      applyTilt();
+      loadNote(0);
       document.getElementById('envWrap').classList.add('hidden');
       document.getElementById('hint').classList.add('hidden');
       const nw = document.getElementById('noteWrap');
