@@ -327,7 +327,12 @@ body::before {
    Save button
 ------------------------- */
 
-.save-btn {
+.note-actions {
+  display: flex;
+  gap: 0.8rem;
+}
+
+.save-btn, .reply-btn {
   background: #c4967a;
   border: none;
   border-radius: 20px;

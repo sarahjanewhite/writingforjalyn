@@ -54,7 +54,10 @@
           <div class="note-tap-hint">tap outside to close</div>
         </div>
       </div>
-      <button class="save-btn" onclick="event.stopPropagation(); saveNote()">save note</button>
+      <div class="note-actions">
+        <button class="save-btn" onclick="event.stopPropagation(); saveNote()">save note</button>
+        <button class="reply-btn" onclick="event.stopPropagation(); replyToNote()">reply to sj</button>
+      </div>
     </div>
   </div>
 

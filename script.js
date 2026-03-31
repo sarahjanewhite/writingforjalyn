@@ -100,6 +100,13 @@ function closeNote() {
 //  Save note as image
 // -------------------------
 
+function replyToNote() {
+  const body = notes[currentNoteIdx].body;
+  const preview = body.length > 50 ? body.slice(0, 50).trimEnd() + '…' : body;
+  const text = `replying to: "${preview}" 💌\n\n`;
+  window.open(`sms:+19199464600&body=${encodeURIComponent(text)}`);
+}
+
 function saveNote() {
   const note = document.querySelector('.note');
   html2canvas(note, { useCORS: true, scale: 2 }).then(canvas => {
