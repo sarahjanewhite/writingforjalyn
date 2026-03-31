@@ -67,6 +67,13 @@ body::before {
   -webkit-tap-highlight-color: transparent;
   z-index: 10;
   transition: opacity 0.55s ease, transform 0.55s ease;
+  animation: envelopeWiggle 0.5s ease-in-out 1s 2;
+}
+
+@keyframes envelopeWiggle {
+  0%, 100% { transform: rotate(0deg); }
+  25%       { transform: rotate(-2.5deg); }
+  75%       { transform: rotate(2.5deg); }
 }
 
 .envelope-wrap.hidden {
