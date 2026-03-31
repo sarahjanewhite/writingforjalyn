@@ -1,0 +1,74 @@
+CODEBASE OVERVIEW — writingforjalyn
+=====================================
+
+ARCHITECTURE
+------------
+A static web app with no framework, no build step, and no backend.
+Three frontend files + a data file, hosted on Vercel, source on GitHub.
+
+
+FILES
+-----
+
+index.html
+  The structure of the app. Just markup — no inline styles or scripts.
+  Defines three main layers:
+    - The envelope scene: the envelope image, CSS wax seal with "SJ",
+      and "to my love" text
+    - The note: hidden by default, contains the note card with a stack
+      of "older note" cards peeking behind it, nav arrows, save & reply buttons
+    - The hearts canvas: an empty div that JS populates with falling hearts
+  Links to style.css and script.js, and loads html2canvas from a CDN
+  for the save feature.
+
+style.css
+  All the visual styling, organized in sections:
+    - Body/scene: pink gradient background, radial glows
+    - Hearts: just positioning; animation is JS-driven
+    - Envelope: sizing, hidden state transition, wiggle animation
+    - Wax seal: CSS-only circle with a jagged clip-path, radial gradient,
+      embossed initials
+    - Note: the card, the behind-stack cards, nav buttons, save/reply buttons
+
+script.js
+  All the behaviour, in sections:
+    - Notes: fetches notes.json on load, populates the note card, handles
+      the stack/nav, applies a random tilt on each open
+    - Envelope: openEnvelope() / closeNote() with a busy lock to prevent
+      double-taps
+    - Save: uses html2canvas to screenshot the note card and download it
+      as a PNG
+    - Reply: opens sms:+19199464600 pre-filled with the current note
+      as context
+    - Hearts: a requestAnimationFrame loop that moves 55 heart elements
+      down the screen, fading in at the top and out at the bottom,
+      recycling when they go off-screen
+
+notes.json
+  The content. A plain JSON array of { date, body } objects, newest first.
+  This is what the admin page edits — script.js fetches it fresh on every
+  page load.
+
+admin.html
+  A separate page at /admin.html for adding new notes from your phone.
+  Completely standalone — its own styles, no shared CSS. On submit it:
+    1. Fetches notes.json from the GitHub API (needs a token with repo scope)
+    2. Decodes the base64 content, prepends the new note, re-encodes
+    3. Commits it back via a PUT to the API
+  Vercel detects the new commit and redeploys in ~30 seconds. The token
+  is saved to localStorage so you only enter it once per device.
+
+
+HOW IT ALL CONNECTS
+-------------------
+
+  GitHub repo
+    ├── notes.json        <- edited by admin.html via GitHub API
+    ├── index.html        <- loads style.css + script.js
+    ├── style.css
+    ├── script.js         <- fetches notes.json at runtime
+    └── admin.html        <- standalone tool for adding notes
+            |
+         Vercel           <- auto-deploys on every commit
+            |
+    writingforjalyn.vercel.app
