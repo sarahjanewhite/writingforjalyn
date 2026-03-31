@@ -2,6 +2,10 @@
 const notes = [
   {
     date: "March 30, 2026",
+    body: `you are the most important person to me in any room.`
+  },
+  {
+    date: "March 30, 2026",
     body: `you push me to be a better person. i'm so lucky to be a part of your life. 🌷`
   }
 ];
