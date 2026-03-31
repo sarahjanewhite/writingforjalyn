@@ -31,7 +31,7 @@ function loadNote(idx) {
   const n = notes[idx];
   document.getElementById('noteBody').textContent = n.body;
   document.getElementById('noteDate').textContent = n.date;
-  document.getElementById('dayCounter').textContent = `day ${getDayCount()} ♡`;
+  document.getElementById('dayCounter').textContent = `day ${getDayCount()} with you ♡`;
 
   const total = notes.length;
   const nav = document.getElementById('noteNav');
