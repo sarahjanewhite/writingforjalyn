@@ -2,12 +2,18 @@ let notes = [];
 
 function setUnreadIndicator(hasUnread) {
   document.getElementById('envWrap').classList.toggle('has-unread', hasUnread);
+  const hint = document.getElementById('hint');
+  if (hint && !hint.classList.contains('hidden')) {
+    hint.textContent = hasUnread ? 'new note from sj ♡' : 'tap to open ♡';
+  }
 }
 
 function markAsRead() {
   const newest = notes[0];
   if (newest) localStorage.setItem('sj_last_read', newest.body);
-  setUnreadIndicator(false);
+  document.getElementById('envWrap').classList.remove('has-unread');
+  const hint = document.getElementById('hint');
+  if (hint) hint.textContent = 'tap to open ♡';
 }
 
 function fetchNotes() {

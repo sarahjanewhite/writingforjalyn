@@ -83,7 +83,7 @@ body::before {
 }
 
 .envelope-wrap.has-unread {
-  filter: drop-shadow(0 0 12px rgba(196, 96, 112, 0.55));
+  filter: drop-shadow(0 0 18px rgba(196, 96, 112, 0.8)) drop-shadow(0 0 32px rgba(196, 96, 112, 0.4));
 }
 
 .env-svg { width: 100%; display: block; }
