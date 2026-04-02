@@ -1,5 +1,15 @@
 let notes = [];
 
+function setUnreadIndicator(hasUnread) {
+  document.getElementById('envWrap').classList.toggle('has-unread', hasUnread);
+}
+
+function markAsRead() {
+  const newest = notes[0];
+  if (newest) localStorage.setItem('sj_last_read', newest.body);
+  setUnreadIndicator(false);
+}
+
 function fetchNotes() {
   return fetch('notes.json?t=' + Date.now())
     .then(r => r.json())
@@ -12,6 +22,9 @@ function fetchNotes() {
       if (!noteOpen && newFirst !== oldFirst) {
         currentNoteIdx = 0;
       }
+      // unread indicator — compare newest note to last one she opened
+      const lastRead = localStorage.getItem('sj_last_read');
+      setUnreadIndicator(!!notes[0] && notes[0].body !== lastRead);
     })
     .catch(() => {
       if (!notes.length) notes = [{ date: '', body: 'could not load notes.' }];
@@ -81,6 +94,7 @@ let busy = false;
 function openEnvelope() {
   if (busy) return;
   busy = true;
+  markAsRead();
   currentNoteIdx = 0;
   applyTilt();
   loadNote(0);

@@ -82,6 +82,10 @@ body::before {
   pointer-events: none;
 }
 
+.envelope-wrap.has-unread {
+  filter: drop-shadow(0 0 12px rgba(196, 96, 112, 0.55));
+}
+
 .env-svg { width: 100%; display: block; }
 
 .envelope-to {
