@@ -3,130 +3,186 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>new note — sj</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=Cormorant+Garamond:ital,wght@0,400;1,400&display=swap" rel="stylesheet" />
+  <title>admin // writingforjalyn</title>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+    :root {
+      --green: #ffb000;
+      --dimgreen: #b37a00;
+      --darkgreen: #3b2800;
+      --bg: #0a0800;
+    }
+
     body {
+      background: var(--bg);
+      color: var(--green);
+      font-family: 'Share Tech Mono', 'Courier New', monospace;
       min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: linear-gradient(160deg, #fdf0eb 0%, #fce8f0 50%, #f9e4e8 100%);
-      font-family: 'Cormorant Garamond', serif;
       padding: 2rem 1.5rem;
+      /* scanlines */
+      background-image: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0, 0, 0, 0.15) 2px,
+        rgba(0, 0, 0, 0.15) 4px
+      );
     }
 
-    .card {
-      background: #fffef5;
+    .terminal {
       width: 100%;
-      max-width: 380px;
-      padding: 2.4rem 2.2rem 2rem;
-      box-shadow: 2px 4px 16px rgba(0,0,0,0.1);
+      max-width: 560px;
+      border: 1px solid var(--dimgreen);
+      box-shadow:
+        0 0 8px rgba(0, 255, 65, 0.3),
+        inset 0 0 40px rgba(0, 255, 65, 0.03);
+      padding: 2rem;
     }
+
+    .titlebar {
+      border-bottom: 1px solid var(--dimgreen);
+      padding-bottom: 0.8rem;
+      margin-bottom: 1.6rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      color: var(--dimgreen);
+      letter-spacing: 0.1em;
+    }
+
+    .titlebar-title { color: var(--green); font-size: 13px; }
 
     h1 {
-      font-family: 'Caveat', cursive;
-      font-size: 28px;
-      color: #8b4c3a;
-      margin-bottom: 1.8rem;
-      font-weight: 600;
+      font-size: 13px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 2rem;
+      color: var(--dimgreen);
     }
+
+    h1 span { color: var(--green); }
 
     label {
       display: block;
-      font-style: italic;
-      font-size: 13px;
-      color: #c4967a;
-      margin-bottom: 0.4rem;
-      letter-spacing: 0.04em;
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--dimgreen);
+      margin-bottom: 0.5rem;
     }
+
+    label::before { content: '> '; color: var(--green); }
 
     input, textarea {
       width: 100%;
-      border: 1px solid #e8d5c8;
-      background: #fffef5;
-      padding: 10px 12px;
-      font-family: 'Caveat', cursive;
-      font-size: 20px;
-      color: #5c3828;
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid var(--darkgreen);
+      color: var(--green);
+      font-family: 'Share Tech Mono', 'Courier New', monospace;
+      font-size: 15px;
+      padding: 8px 0;
       outline: none;
-      margin-bottom: 1.4rem;
+      margin-bottom: 1.8rem;
+      caret-color: var(--green);
       transition: border-color 0.2s;
     }
 
     input:focus, textarea:focus {
-      border-color: #c4967a;
+      border-bottom-color: var(--green);
     }
 
-    input[type="password"] {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 15px;
-      letter-spacing: 0.1em;
+    input::placeholder, textarea::placeholder {
+      color: var(--darkgreen);
     }
+
+    input[type="password"] { letter-spacing: 0.2em; }
 
     textarea {
       resize: vertical;
-      min-height: 130px;
+      min-height: 110px;
       line-height: 1.7;
+      border: 1px solid var(--darkgreen);
+      padding: 8px;
     }
+
+    textarea:focus { border-color: var(--green); }
 
     .submit-btn {
       width: 100%;
-      background: #c4967a;
-      border: none;
+      background: transparent;
+      border: 1px solid var(--green);
+      color: var(--green);
+      font-family: 'Share Tech Mono', 'Courier New', monospace;
+      font-size: 13px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
       padding: 12px;
-      font-family: 'Cormorant Garamond', serif;
-      font-style: italic;
-      font-size: 17px;
-      color: #fffef5;
       cursor: pointer;
-      letter-spacing: 0.06em;
-      box-shadow: 0 2px 8px rgba(196,150,122,0.3);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: opacity 0.2s;
+      transition: background 0.15s, color 0.15s;
+      box-shadow: 0 0 6px rgba(0, 255, 65, 0.2);
     }
 
-    .submit-btn:disabled { opacity: 0.5; cursor: default; }
+    .submit-btn:hover:not(:disabled) {
+      background: var(--green);
+      color: var(--bg);
+    }
+
+    .submit-btn:disabled { opacity: 0.35; cursor: default; }
 
     .status {
-      margin-top: 1.2rem;
-      font-style: italic;
-      font-size: 13px;
-      text-align: center;
-      min-height: 20px;
-      letter-spacing: 0.04em;
+      margin-top: 1rem;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      min-height: 18px;
     }
 
-    .status.success { color: #8b4c3a; }
-    .status.error   { color: #c0392b; }
+    .status::before { content: '// '; }
+    .status.success { color: var(--green); }
+    .status.error   { color: #ff4444; }
+    .status.pending { color: var(--dimgreen); }
+
+    .blink {
+      animation: blink 1s step-end infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0; }
+    }
   </style>
 </head>
 <body>
-  <div class="card">
-    <h1>write a new note ♡</h1>
+  <div class="terminal">
+    <div class="titlebar">
+      <span>SJ_ADMIN_CONSOLE v1.0</span>
+      <span class="titlebar-title">writingforjalyn<span class="blink">_</span></span>
+    </div>
+
+    <h1>// <span>transmit new note</span></h1>
 
     <label>github token</label>
     <input type="password" id="token" placeholder="ghp_..." autocomplete="off" />
 
-    <label>note</label>
-    <textarea id="body" placeholder="write something sweet..."></textarea>
+    <label>message body</label>
+    <textarea id="body" placeholder="write something..."></textarea>
 
-    <button class="submit-btn" id="submitBtn" onclick="submitNote()">send it</button>
+    <button class="submit-btn" id="submitBtn" onclick="submitNote()">[ transmit ]</button>
     <div class="status" id="status"></div>
   </div>
 
   <script>
-    const REPO  = 'sarahjanewhite/writingforjalyn';
-    const FILE  = 'notes.json';
-    const API   = `https://api.github.com/repos/${REPO}/contents/${FILE}`;
+    const REPO = 'sarahjanewhite/writingforjalyn';
+    const FILE = 'notes.json';
+    const API  = `https://api.github.com/repos/${REPO}/contents/${FILE}`;
 
-    // restore saved token
     const tokenEl = document.getElementById('token');
     tokenEl.value = localStorage.getItem('sj_gh_token') || '';
 
@@ -141,29 +197,25 @@
       const token = tokenEl.value.trim();
       const body  = document.getElementById('body').value.trim();
       const btn   = document.getElementById('submitBtn');
-      const status = document.getElementById('status');
 
-      if (!token) return setStatus('please enter your github token', 'error');
-      if (!body)  return setStatus('note is empty!', 'error');
+      if (!token) return setStatus('no token provided', 'error');
+      if (!body)  return setStatus('message body is empty', 'error');
 
       localStorage.setItem('sj_gh_token', token);
       btn.disabled = true;
-      setStatus('sending...', '');
+      setStatus('transmitting...', 'pending');
 
       try {
-        // get current file + sha
         const res = await fetch(API, {
           headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json' }
         });
-        if (!res.ok) throw new Error('could not fetch notes — check your token');
+        if (!res.ok) throw new Error('fetch failed — check token');
         const { sha, content } = await res.json();
 
-        // decode, prepend new note, re-encode
         const current = JSON.parse(decodeURIComponent(escape(atob(content.replace(/\n/g, '')))));
         const updated = [{ date: getDate(), body }, ...current];
         const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(updated, null, 2) + '\n')));
 
-        // commit
         const put = await fetch(API, {
           method: 'PUT',
           headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json', 'Content-Type': 'application/json' },
@@ -172,7 +224,7 @@
         if (!put.ok) throw new Error('commit failed — check token permissions');
 
         document.getElementById('body').value = '';
-        setStatus('note sent ♡', 'success');
+        setStatus('transmission successful', 'success');
       } catch (e) {
         setStatus(e.message, 'error');
       } finally {
