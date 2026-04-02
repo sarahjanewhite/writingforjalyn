@@ -422,7 +422,7 @@
 
     // ── edit ──
     function startEdit(i) {
-      document.getElementById(`menu-${i}`).classList.remove('open');
+      toggleMenu(i); // close the menu
       const bodyEl = document.getElementById(`body-${i}`);
       const original = cachedNotes[i].body;
       bodyEl.innerHTML = `
