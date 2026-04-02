@@ -1,4 +1,24 @@
 let notes = [];
+let toastTimer = null;
+
+function showNewNoteToast() {
+  const toast = document.getElementById('newNoteToast');
+  if (toastTimer) clearTimeout(toastTimer);
+  toast.classList.add('show');
+  toastTimer = setTimeout(() => toast.classList.remove('show'), 5000);
+}
+
+function toastGoToNote() {
+  document.getElementById('newNoteToast').classList.remove('show');
+  const noteOpen = document.getElementById('noteWrap').classList.contains('visible');
+  if (noteOpen) {
+    currentNoteIdx = 0;
+    applyTilt();
+    loadNote(0);
+  } else {
+    openEnvelope();
+  }
+}
 
 function fetchNotes() {
   return fetch('notes.json?t=' + Date.now())
@@ -6,11 +26,25 @@ function fetchNotes() {
     .then(data => {
       const newFirst = data[0]?.body;
       const oldFirst = notes[0]?.body;
+      const isNewNote = notes.length > 0 && newFirst !== oldFirst;
       notes = data;
-      // if note view is closed and there's a new note, reset to index 0
       const noteOpen = document.getElementById('noteWrap').classList.contains('visible');
-      if (!noteOpen && newFirst !== oldFirst) {
+      if (isNewNote) {
         currentNoteIdx = 0;
+        if (noteOpen) {
+          // note view is open — show toast so she can jump to the new one
+          showNewNoteToast();
+        } else {
+          // envelope screen — pulse the envelope and update the hint
+          const env = document.getElementById('envWrap');
+          env.classList.remove('new-note');
+          void env.offsetWidth; // restart animation
+          env.classList.add('new-note');
+          const hint = document.getElementById('hint');
+          if (hint && !hint.classList.contains('hidden')) {
+            hint.textContent = 'a new note arrived ♡ tap to open';
+          }
+        }
       }
     })
     .catch(() => {
@@ -25,8 +59,8 @@ document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'visible') fetchNotes();
 });
 
-// also poll every 5 minutes as a fallback
-setInterval(fetchNotes, 5 * 60 * 1000);
+// poll every minute as a fallback
+setInterval(fetchNotes, 60 * 1000);
 
 // -------------------------
 //  Day counter
@@ -84,8 +118,12 @@ function openEnvelope() {
   currentNoteIdx = 0;
   applyTilt();
   loadNote(0);
-  document.getElementById('envWrap').classList.add('hidden');
-  document.getElementById('hint').classList.add('hidden');
+  const env = document.getElementById('envWrap');
+  env.classList.remove('new-note');
+  env.classList.add('hidden');
+  const hint = document.getElementById('hint');
+  hint.textContent = 'tap to open ♡';
+  hint.classList.add('hidden');
   const nw = document.getElementById('noteWrap');
   nw.classList.add('drifting');
   nw.addEventListener('animationend', () => {
