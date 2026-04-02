@@ -156,13 +156,11 @@
     .transmission-body { font-size: 13px; color: var(--amber); line-height: 1.5; }
 
     .note-controls {
-      display: flex;
-      gap: 0.4rem;
+      position: relative;
       flex-shrink: 0;
-      align-items: flex-start;
     }
 
-    .menu-btn, .menu-action {
+    .menu-btn {
       background: none;
       border: none;
       font-family: 'Share Tech Mono', 'Courier New', monospace;
@@ -170,18 +168,38 @@
       padding: 0;
       cursor: pointer;
       letter-spacing: 0.08em;
+      color: var(--dimamber);
       transition: color 0.15s;
     }
-
-    .menu-btn { color: var(--dimamber); }
     .menu-btn:hover { color: var(--amber); }
 
-    .menu-action { display: none; color: var(--amber); }
-    .menu-action.visible { display: inline; }
-    .menu-action.do-delete:hover { color: #ff4444; }
+    .dropdown {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: 1.4rem;
+      background: #110d00;
+      border: 1px solid var(--darkamber);
+      z-index: 10;
+      flex-direction: column;
+      min-width: 80px;
+    }
+    .dropdown.open { display: flex; }
 
-    .menu-sep { color: var(--darkamber); font-size: 11px; display: none; }
-    .menu-sep.visible { display: inline; }
+    .menu-action {
+      background: none;
+      border: none;
+      font-family: 'Share Tech Mono', 'Courier New', monospace;
+      font-size: 11px;
+      padding: 6px 12px;
+      cursor: pointer;
+      letter-spacing: 0.08em;
+      color: var(--amber);
+      text-align: left;
+      transition: background 0.15s;
+    }
+    .menu-action:hover { background: var(--darkamber); }
+    .menu-action.do-delete:hover { color: #ff4444; background: var(--darkamber); }
 
     .edit-textarea {
       width: 100%;
@@ -303,10 +321,10 @@
             </div>
             <div class="note-controls" id="controls-${i}">
               <button class="menu-btn" id="menu-btn-${i}" onclick="toggleMenu(${i})">[ ... ]</button>
-              <span class="menu-sep" id="sep-${i}">|</span>
-              <button class="menu-action do-edit"   id="edit-action-${i}"   onclick="startEdit(${i})">edit</button>
-              <span class="menu-sep" id="sep2-${i}">|</span>
-              <button class="menu-action do-delete" id="delete-action-${i}" onclick="deleteNote(${i})">delete</button>
+              <div class="dropdown" id="dropdown-${i}">
+                <button class="menu-action do-edit"   onclick="startEdit(${i})">edit</button>
+                <button class="menu-action do-delete" onclick="deleteNote(${i})">delete</button>
+              </div>
             </div>
           </div>
         `;
@@ -315,20 +333,25 @@
     }
 
     function toggleMenu(i) {
-      const isOpen = document.getElementById(`edit-action-${i}`).classList.contains('visible');
+      const dropdown = document.getElementById(`dropdown-${i}`);
+      const isOpen = dropdown.classList.contains('open');
       // close all
-      document.querySelectorAll('.menu-action').forEach(el => el.classList.remove('visible'));
-      document.querySelectorAll('.menu-sep').forEach(el => el.classList.remove('visible'));
-      document.querySelectorAll('.menu-btn').forEach(el => { el.textContent = '[ ... ]'; });
-      // open this one if it wasn't already open
+      document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('open'));
+      document.querySelectorAll('.menu-btn').forEach(b => b.textContent = '[ ... ]');
+      // open this one if it wasn't already
       if (!isOpen) {
-        document.getElementById(`edit-action-${i}`).classList.add('visible');
-        document.getElementById(`delete-action-${i}`).classList.add('visible');
-        document.getElementById(`sep-${i}`).classList.add('visible');
-        document.getElementById(`sep2-${i}`).classList.add('visible');
+        dropdown.classList.add('open');
         document.getElementById(`menu-btn-${i}`).textContent = '[ x ]';
       }
     }
+
+    // close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.note-controls')) {
+        document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('open'));
+        document.querySelectorAll('.menu-btn').forEach(b => b.textContent = '[ ... ]');
+      }
+    });
 
     // ── load from GitHub ──
     async function loadNotes() {
