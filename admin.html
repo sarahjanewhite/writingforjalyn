@@ -184,9 +184,15 @@
     .transmission {
       padding: 0.7rem 0;
       border-bottom: 1px solid var(--darkamber);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 1rem;
     }
 
     .transmission:last-child { border-bottom: none; }
+
+    .transmission-text { flex: 1; }
 
     .transmission-date {
       font-size: 10px;
@@ -200,6 +206,49 @@
       color: var(--amber);
       line-height: 1.5;
     }
+
+    .transmission-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      flex-shrink: 0;
+    }
+
+    .delete-btn, .edit-btn, .save-btn-sm, .cancel-btn {
+      background: none;
+      border: 1px solid var(--darkamber);
+      color: var(--dimamber);
+      font-family: 'Share Tech Mono', 'Courier New', monospace;
+      font-size: 11px;
+      padding: 3px 7px;
+      cursor: pointer;
+      letter-spacing: 0.1em;
+      transition: border-color 0.15s, color 0.15s;
+      width: 100%;
+    }
+
+    .delete-btn:hover { border-color: #ff4444; color: #ff4444; }
+    .edit-btn:hover   { border-color: var(--amber); color: var(--amber); }
+    .save-btn-sm:hover  { border-color: var(--amber); color: var(--amber); }
+    .cancel-btn:hover { border-color: #ff4444; color: #ff4444; }
+
+    .edit-textarea {
+      width: 100%;
+      background: transparent;
+      border: 1px solid var(--dimamber);
+      color: var(--amber);
+      font-family: 'Share Tech Mono', 'Courier New', monospace;
+      font-size: 13px;
+      padding: 6px;
+      outline: none;
+      resize: vertical;
+      min-height: 70px;
+      line-height: 1.6;
+      caret-color: var(--amber);
+      margin-top: 0.3rem;
+    }
+
+    .edit-textarea:focus { border-color: var(--amber); }
 
     .empty { color: var(--dimamber); font-size: 12px; }
   </style>
@@ -280,12 +329,19 @@
 
         const list = document.getElementById('recentList');
         list.innerHTML = '';
-        notes.slice(0, 3).forEach(n => {
+        notes.forEach((n, i) => {
           const div = document.createElement('div');
           div.className = 'transmission';
+          div.id = `note-${i}`;
           div.innerHTML = `
-            <div class="transmission-date">${n.date}</div>
-            <div class="transmission-body">${n.body}</div>
+            <div class="transmission-text">
+              <div class="transmission-date">${n.date}</div>
+              <div class="transmission-body" id="body-${i}">${n.body}</div>
+            </div>
+            <div class="transmission-actions">
+              <button class="edit-btn" id="edit-btn-${i}" onclick="editNote(${i}, ${JSON.stringify(n.body)})">[ edit ]</button>
+              <button class="delete-btn" onclick="deleteNote(${i})">[ x ]</button>
+            </div>
           `;
           list.appendChild(div);
         });
@@ -295,6 +351,84 @@
     }
 
     loadNotes();
+
+    function editNote(idx, originalBody) {
+      const bodyEl = document.getElementById(`body-${idx}`);
+      const editBtn = document.getElementById(`edit-btn-${idx}`);
+
+      bodyEl.innerHTML = `
+        <textarea class="edit-textarea" id="edit-input-${idx}">${originalBody}</textarea>
+        <div style="display:flex;gap:0.4rem;margin-top:0.4rem;">
+          <button class="save-btn-sm" onclick="saveEdit(${idx})">[ save ]</button>
+          <button class="cancel-btn" onclick="loadNotes()">[ cancel ]</button>
+        </div>
+      `;
+      editBtn.style.display = 'none';
+      document.getElementById(`edit-input-${idx}`).focus();
+    }
+
+    async function saveEdit(idx) {
+      const token = tokenEl.value.trim();
+      const newBody = document.getElementById(`edit-input-${idx}`).value.trim();
+      if (!token) return setStatus('no token — fill in github token first', 'error');
+      if (!newBody) return setStatus('note body is empty', 'error');
+
+      setStatus('saving...', 'pending');
+      try {
+        const res = await fetch(API, {
+          headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json' }
+        });
+        if (!res.ok) throw new Error('fetch failed — check token');
+        const { sha, content } = await res.json();
+
+        const notes = JSON.parse(decodeURIComponent(escape(atob(content.replace(/\n/g, '')))));
+        notes[idx].body = newBody;
+        const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(notes, null, 2) + '\n')));
+
+        const put = await fetch(API, {
+          method: 'PUT',
+          headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json', 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: `edit note — ${getDate()}`, content: encoded, sha })
+        });
+        if (!put.ok) throw new Error('save failed — check token permissions');
+
+        setStatus('note updated', 'success');
+        setTimeout(loadNotes, 3000);
+      } catch (e) {
+        setStatus(e.message, 'error');
+      }
+    }
+
+    async function deleteNote(idx) {
+      const token = tokenEl.value.trim();
+      if (!token) return setStatus('no token — fill in github token first', 'error');
+      if (!confirm('delete this note?')) return;
+
+      setStatus('deleting...', 'pending');
+      try {
+        const res = await fetch(API, {
+          headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json' }
+        });
+        if (!res.ok) throw new Error('fetch failed — check token');
+        const { sha, content } = await res.json();
+
+        const notes = JSON.parse(decodeURIComponent(escape(atob(content.replace(/\n/g, '')))));
+        notes.splice(idx, 1);
+        const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(notes, null, 2) + '\n')));
+
+        const put = await fetch(API, {
+          method: 'PUT',
+          headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json', 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: `delete note — ${getDate()}`, content: encoded, sha })
+        });
+        if (!put.ok) throw new Error('delete failed — check token permissions');
+
+        setStatus('note deleted', 'success');
+        setTimeout(loadNotes, 3000);
+      } catch (e) {
+        setStatus(e.message, 'error');
+      }
+    }
 
     function getDate() {
       const months = ['January','February','March','April','May','June',
