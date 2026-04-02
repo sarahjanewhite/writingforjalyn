@@ -1,9 +1,32 @@
 let notes = [];
 
-fetch('notes.json?t=' + Date.now())
-  .then(r => r.json())
-  .then(data => { notes = data; })
-  .catch(() => { notes = [{ date: '', body: 'could not load notes.' }]; });
+function fetchNotes() {
+  return fetch('notes.json?t=' + Date.now())
+    .then(r => r.json())
+    .then(data => {
+      const newFirst = data[0]?.body;
+      const oldFirst = notes[0]?.body;
+      notes = data;
+      // if note view is closed and there's a new note, reset to index 0
+      const noteOpen = document.getElementById('noteWrap').classList.contains('visible');
+      if (!noteOpen && newFirst !== oldFirst) {
+        currentNoteIdx = 0;
+      }
+    })
+    .catch(() => {
+      if (!notes.length) notes = [{ date: '', body: 'could not load notes.' }];
+    });
+}
+
+fetchNotes();
+
+// refresh when Jalyn switches back to the app
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible') fetchNotes();
+});
+
+// also poll every 5 minutes as a fallback
+setInterval(fetchNotes, 5 * 60 * 1000);
 
 // -------------------------
 //  Day counter
