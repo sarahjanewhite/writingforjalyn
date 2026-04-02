@@ -138,26 +138,23 @@
 
     /* transmissions */
     .transmission {
+      position: relative;
       padding: 0.7rem 0;
       border-bottom: 1px solid var(--darkamber);
     }
     .transmission:last-child { border-bottom: none; }
 
-    .transmission-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 1rem;
-    }
+    .transmission-row { display: block; }
 
-    .transmission-text { flex: 1; }
+    .transmission-text { display: block; }
 
     .transmission-date { font-size: 10px; color: var(--dimamber); letter-spacing: 0.1em; margin-bottom: 0.3rem; }
     .transmission-body { font-size: 13px; color: var(--amber); line-height: 1.5; }
 
     .note-controls {
-      position: relative;
-      flex-shrink: 0;
+      position: absolute;
+      top: 0.7rem;
+      right: 0;
     }
 
     .menu-btn {
