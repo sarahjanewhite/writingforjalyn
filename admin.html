@@ -332,8 +332,14 @@
     // ── load from GitHub ──
     async function loadNotes() {
       try {
-        const res = await fetch(`https://raw.githubusercontent.com/${REPO}/main/${FILE}?t=${Date.now()}`);
-        cachedNotes = await res.json();
+        const token = tokenEl.value.trim();
+        const headers = token
+          ? { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json' }
+          : { Accept: 'application/vnd.github+json' };
+        const res = await fetch(API, { headers });
+        if (!res.ok) throw new Error();
+        const { content } = await res.json();
+        cachedNotes = JSON.parse(decodeURIComponent(escape(atob(content.replace(/\n/g, '')))));
         updateStats();
         renderNotes();
       } catch {
