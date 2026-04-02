@@ -28,11 +28,8 @@
       min-height: 100vh;
       padding: 1.5rem;
       background-image: repeating-linear-gradient(
-        0deg,
-        transparent,
-        transparent 2px,
-        rgba(0, 0, 0, 0.15) 2px,
-        rgba(0, 0, 0, 0.15) 4px
+        0deg, transparent, transparent 2px,
+        rgba(0,0,0,0.15) 2px, rgba(0,0,0,0.15) 4px
       );
     }
 
@@ -50,14 +47,8 @@
 
     .titlebar-title { color: var(--amber); }
 
-    .blink {
-      animation: blink 1s step-end infinite;
-    }
-
-    @keyframes blink {
-      0%, 100% { opacity: 1; }
-      50%       { opacity: 0; }
-    }
+    .blink { animation: blink 1s step-end infinite; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
 
     .grid {
       display: flex;
@@ -69,7 +60,7 @@
 
     .panel {
       border: 1px solid var(--darkamber);
-      box-shadow: 0 0 8px rgba(255, 176, 0, 0.08);
+      box-shadow: 0 0 8px rgba(255,176,0,0.08);
       padding: 1.2rem 1.4rem;
     }
 
@@ -85,35 +76,13 @@
 
     .panel-header::before { content: '// '; color: var(--amber); }
 
-    /* ── stats ── */
-    .stats {
-      display: flex;
-      gap: 2rem;
-    }
+    /* stats */
+    .stats { display: flex; gap: 2rem; }
+    .stat-label { font-size: 10px; letter-spacing: 0.15em; color: var(--dimamber); text-transform: uppercase; margin-bottom: 0.3rem; }
+    .stat-value { font-size: 22px; color: var(--amber); }
 
-    .stat-label {
-      font-size: 10px;
-      letter-spacing: 0.15em;
-      color: var(--dimamber);
-      text-transform: uppercase;
-      margin-bottom: 0.3rem;
-    }
-
-    .stat-value {
-      font-size: 22px;
-      color: var(--amber);
-    }
-
-    /* ── transmit form ── */
-    label {
-      display: block;
-      font-size: 10px;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      color: var(--dimamber);
-      margin-bottom: 0.4rem;
-    }
-
+    /* form */
+    label { display: block; font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--dimamber); margin-bottom: 0.4rem; }
     label::before { content: '> '; color: var(--amber); }
 
     input, textarea {
@@ -141,9 +110,7 @@
       line-height: 1.7;
       border: 1px solid var(--darkamber);
       padding: 8px;
-      margin-bottom: 1.4rem;
     }
-
     textarea:focus { border-color: var(--amber); }
 
     .submit-btn {
@@ -158,63 +125,37 @@
       padding: 12px;
       cursor: pointer;
       transition: background 0.15s, color 0.15s;
-      box-shadow: 0 0 6px rgba(255, 176, 0, 0.15);
+      box-shadow: 0 0 6px rgba(255,176,0,0.15);
     }
-
-    .submit-btn:hover:not(:disabled) {
-      background: var(--amber);
-      color: var(--bg);
-    }
-
+    .submit-btn:hover:not(:disabled) { background: var(--amber); color: var(--bg); }
     .submit-btn:disabled { opacity: 0.35; cursor: default; }
 
-    .status {
-      margin-top: 0.8rem;
-      font-size: 11px;
-      letter-spacing: 0.08em;
-      min-height: 16px;
-    }
-
+    .status { margin-top: 0.8rem; font-size: 11px; letter-spacing: 0.08em; min-height: 16px; }
     .status::before { content: '// '; }
     .status.success { color: var(--amber); }
     .status.error   { color: #ff4444; }
     .status.pending { color: var(--dimamber); }
 
-    /* ── recent transmissions ── */
+    /* transmissions */
     .transmission {
       padding: 0.7rem 0;
       border-bottom: 1px solid var(--darkamber);
+    }
+    .transmission:last-child { border-bottom: none; }
+
+    .transmission-row {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
       gap: 1rem;
     }
 
-    .transmission:last-child { border-bottom: none; }
-
     .transmission-text { flex: 1; }
 
-    .transmission-date {
-      font-size: 10px;
-      color: var(--dimamber);
-      letter-spacing: 0.1em;
-      margin-bottom: 0.3rem;
-    }
+    .transmission-date { font-size: 10px; color: var(--dimamber); letter-spacing: 0.1em; margin-bottom: 0.3rem; }
+    .transmission-body { font-size: 13px; color: var(--amber); line-height: 1.5; }
 
-    .transmission-body {
-      font-size: 13px;
-      color: var(--amber);
-      line-height: 1.5;
-    }
-
-    .transmission-actions {
-      display: flex;
-      flex-direction: column;
-      gap: 0.4rem;
-      flex-shrink: 0;
-    }
-
-    .delete-btn, .edit-btn, .save-btn-sm, .cancel-btn {
+    .menu-btn {
       background: none;
       border: 1px solid var(--darkamber);
       color: var(--dimamber);
@@ -223,14 +164,33 @@
       padding: 3px 7px;
       cursor: pointer;
       letter-spacing: 0.1em;
+      flex-shrink: 0;
       transition: border-color 0.15s, color 0.15s;
-      width: 100%;
     }
+    .menu-btn:hover { border-color: var(--amber); color: var(--amber); }
 
-    .delete-btn:hover { border-color: #ff4444; color: #ff4444; }
-    .edit-btn:hover   { border-color: var(--amber); color: var(--amber); }
-    .save-btn-sm:hover  { border-color: var(--amber); color: var(--amber); }
-    .cancel-btn:hover { border-color: #ff4444; color: #ff4444; }
+    .note-menu {
+      display: none;
+      gap: 0.5rem;
+      margin-top: 0.6rem;
+      padding-top: 0.6rem;
+      border-top: 1px solid var(--darkamber);
+    }
+    .note-menu.open { display: flex; }
+
+    .menu-action {
+      background: none;
+      border: 1px solid var(--darkamber);
+      color: var(--dimamber);
+      font-family: 'Share Tech Mono', 'Courier New', monospace;
+      font-size: 11px;
+      padding: 3px 10px;
+      cursor: pointer;
+      letter-spacing: 0.1em;
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .menu-action.do-edit:hover  { border-color: var(--amber); color: var(--amber); }
+    .menu-action.do-delete:hover { border-color: #ff4444; color: #ff4444; }
 
     .edit-textarea {
       width: 100%;
@@ -245,10 +205,24 @@
       min-height: 70px;
       line-height: 1.6;
       caret-color: var(--amber);
-      margin-top: 0.3rem;
+      margin-top: 0.4rem;
     }
-
     .edit-textarea:focus { border-color: var(--amber); }
+
+    .edit-actions { display: flex; gap: 0.5rem; margin-top: 0.4rem; }
+    .edit-save, .edit-cancel {
+      background: none;
+      border: 1px solid var(--darkamber);
+      color: var(--dimamber);
+      font-family: 'Share Tech Mono', 'Courier New', monospace;
+      font-size: 11px;
+      padding: 3px 10px;
+      cursor: pointer;
+      letter-spacing: 0.1em;
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .edit-save:hover   { border-color: var(--amber); color: var(--amber); }
+    .edit-cancel:hover { border-color: #ff4444; color: #ff4444; }
 
     .empty { color: var(--dimamber); font-size: 12px; }
   </style>
@@ -262,7 +236,6 @@
 
   <div class="grid">
 
-    <!-- stats -->
     <div class="panel">
       <div class="panel-header">system stats</div>
       <div class="stats">
@@ -277,21 +250,16 @@
       </div>
     </div>
 
-    <!-- transmit -->
     <div class="panel">
       <div class="panel-header">transmit new note</div>
-
       <label>github token</label>
       <input type="password" id="token" placeholder="ghp_..." autocomplete="off" />
-
       <label>message body</label>
       <textarea id="body" placeholder="write something..."></textarea>
-
       <button class="submit-btn" id="submitBtn" onclick="submitNote()">[ transmit ]</button>
       <div class="status" id="status"></div>
     </div>
 
-    <!-- recent transmissions -->
     <div class="panel">
       <div class="panel-header">recent transmissions</div>
       <div id="recentList"><span class="empty">loading...</span></div>
@@ -304,7 +272,6 @@
     const FILE = 'notes.json';
     const API  = `https://api.github.com/repos/${REPO}/contents/${FILE}`;
 
-    // restore token
     const tokenEl = document.getElementById('token');
     tokenEl.value = localStorage.getItem('sj_gh_token') || '';
 
@@ -318,33 +285,57 @@
     updateClock();
     setInterval(updateClock, 1000);
 
-    // load notes for stats + recent
-    async function loadNotes() {
-      try {
-        const res = await fetch(`https://raw.githubusercontent.com/${REPO}/main/${FILE}?t=${Date.now()}`);
-        const notes = await res.json();
+    // ── single source of truth ──
+    let cachedNotes = [];
 
-        document.getElementById('noteCount').textContent = notes.length;
-        document.getElementById('latestDate').textContent = notes[0]?.date.split(',')[0] || '—';
+    function updateStats() {
+      document.getElementById('noteCount').textContent = cachedNotes.length;
+      document.getElementById('latestDate').textContent = cachedNotes[0]?.date.split(',')[0] || '—';
+    }
 
-        const list = document.getElementById('recentList');
-        list.innerHTML = '';
-        notes.forEach((n, i) => {
-          const div = document.createElement('div');
-          div.className = 'transmission';
-          div.id = `note-${i}`;
-          div.innerHTML = `
+    function renderNotes() {
+      const list = document.getElementById('recentList');
+      list.innerHTML = '';
+      if (!cachedNotes.length) {
+        list.innerHTML = '<span class="empty">no notes yet</span>';
+        return;
+      }
+      cachedNotes.forEach((n, i) => {
+        const div = document.createElement('div');
+        div.className = 'transmission';
+        div.id = `note-${i}`;
+        div.innerHTML = `
+          <div class="transmission-row">
             <div class="transmission-text">
               <div class="transmission-date">${n.date}</div>
               <div class="transmission-body" id="body-${i}">${n.body}</div>
             </div>
-            <div class="transmission-actions">
-              <button class="edit-btn" id="edit-btn-${i}" onclick="editNote(${i}, ${JSON.stringify(n.body)})">[ edit ]</button>
-              <button class="delete-btn" onclick="deleteNote(${i})">[ x ]</button>
-            </div>
-          `;
-          list.appendChild(div);
-        });
+            <button class="menu-btn" onclick="toggleMenu(${i})">[ ... ]</button>
+          </div>
+          <div class="note-menu" id="menu-${i}">
+            <button class="menu-action do-edit"   onclick="startEdit(${i})">edit</button>
+            <button class="menu-action do-delete" onclick="deleteNote(${i})">delete</button>
+          </div>
+        `;
+        list.appendChild(div);
+      });
+    }
+
+    function toggleMenu(i) {
+      // close all other menus first
+      document.querySelectorAll('.note-menu').forEach((m, idx) => {
+        if (idx !== i) m.classList.remove('open');
+      });
+      document.getElementById(`menu-${i}`).classList.toggle('open');
+    }
+
+    // ── load from GitHub ──
+    async function loadNotes() {
+      try {
+        const res = await fetch(`https://raw.githubusercontent.com/${REPO}/main/${FILE}?t=${Date.now()}`);
+        cachedNotes = await res.json();
+        updateStats();
+        renderNotes();
       } catch {
         document.getElementById('recentList').innerHTML = '<span class="empty">could not load notes</span>';
       }
@@ -352,90 +343,24 @@
 
     loadNotes();
 
-    function editNote(idx, originalBody) {
-      const bodyEl = document.getElementById(`body-${idx}`);
-      const editBtn = document.getElementById(`edit-btn-${idx}`);
-
-      bodyEl.innerHTML = `
-        <textarea class="edit-textarea" id="edit-input-${idx}">${originalBody}</textarea>
-        <div style="display:flex;gap:0.4rem;margin-top:0.4rem;">
-          <button class="save-btn-sm" onclick="saveEdit(${idx})">[ save ]</button>
-          <button class="cancel-btn" onclick="loadNotes()">[ cancel ]</button>
-        </div>
-      `;
-      editBtn.style.display = 'none';
-      document.getElementById(`edit-input-${idx}`).focus();
-    }
-
-    async function saveEdit(idx) {
+    // ── commit helper ──
+    async function commitNotes(message) {
       const token = tokenEl.value.trim();
-      const newBody = document.getElementById(`edit-input-${idx}`).value.trim();
-      if (!token) return setStatus('no token — fill in github token first', 'error');
-      if (!newBody) return setStatus('note body is empty', 'error');
-
-      setStatus('saving...', 'pending');
-      try {
-        const res = await fetch(API, {
-          headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json' }
-        });
-        if (!res.ok) throw new Error('fetch failed — check token');
-        const { sha, content } = await res.json();
-
-        const notes = JSON.parse(decodeURIComponent(escape(atob(content.replace(/\n/g, '')))));
-        notes[idx].body = newBody;
-        const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(notes, null, 2) + '\n')));
-
-        const put = await fetch(API, {
-          method: 'PUT',
-          headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json', 'Content-Type': 'application/json' },
-          body: JSON.stringify({ message: `edit note — ${getDate()}`, content: encoded, sha })
-        });
-        if (!put.ok) throw new Error('save failed — check token permissions');
-
-        setStatus('note updated', 'success');
-        setTimeout(loadNotes, 3000);
-      } catch (e) {
-        setStatus(e.message, 'error');
-      }
+      const res = await fetch(API, {
+        headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json' }
+      });
+      if (!res.ok) throw new Error('fetch failed — check token');
+      const { sha } = await res.json();
+      const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(cachedNotes, null, 2) + '\n')));
+      const put = await fetch(API, {
+        method: 'PUT',
+        headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json', 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message, content: encoded, sha })
+      });
+      if (!put.ok) throw new Error('commit failed — check token permissions');
     }
 
-    async function deleteNote(idx) {
-      const token = tokenEl.value.trim();
-      if (!token) return setStatus('no token — fill in github token first', 'error');
-      if (!confirm('delete this note?')) return;
-
-      // remove from screen immediately
-      const el = document.getElementById(`note-${idx}`);
-      if (el) el.remove();
-      document.getElementById('noteCount').textContent =
-        parseInt(document.getElementById('noteCount').textContent) - 1;
-
-      setStatus('deleting...', 'pending');
-      try {
-        const res = await fetch(API, {
-          headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json' }
-        });
-        if (!res.ok) throw new Error('fetch failed — check token');
-        const { sha, content } = await res.json();
-
-        const notes = JSON.parse(decodeURIComponent(escape(atob(content.replace(/\n/g, '')))));
-        notes.splice(idx, 1);
-        const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(notes, null, 2) + '\n')));
-
-        const put = await fetch(API, {
-          method: 'PUT',
-          headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json', 'Content-Type': 'application/json' },
-          body: JSON.stringify({ message: `delete note — ${getDate()}`, content: encoded, sha })
-        });
-        if (!put.ok) throw new Error('delete failed — check token permissions');
-
-        setStatus('note deleted', 'success');
-        setTimeout(loadNotes, 3000);
-      } catch (e) {
-        setStatus(e.message, 'error');
-      }
-    }
-
+    // ── transmit ──
     function getDate() {
       const months = ['January','February','March','April','May','June',
                       'July','August','September','October','November','December'];
@@ -447,73 +372,77 @@
       const token = tokenEl.value.trim();
       const body  = document.getElementById('body').value.trim();
       const btn   = document.getElementById('submitBtn');
-
       if (!token) return setStatus('no token provided', 'error');
       if (!body)  return setStatus('message body is empty', 'error');
 
       localStorage.setItem('sj_gh_token', token);
       btn.disabled = true;
       setStatus('transmitting...', 'pending');
-
       try {
-        const res = await fetch(API, {
-          headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json' }
-        });
-        if (!res.ok) throw new Error('fetch failed — check token');
-        const { sha, content } = await res.json();
-
-        const current = JSON.parse(decodeURIComponent(escape(atob(content.replace(/\n/g, '')))));
-        const updated = [{ date: getDate(), body }, ...current];
-        const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(updated, null, 2) + '\n')));
-
-        const put = await fetch(API, {
-          method: 'PUT',
-          headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json', 'Content-Type': 'application/json' },
-          body: JSON.stringify({ message: `add note — ${getDate()}`, content: encoded, sha })
-        });
-        if (!put.ok) throw new Error('commit failed — check token permissions');
-
-        const newNote = { date: getDate(), body };
+        cachedNotes.unshift({ date: getDate(), body });
+        updateStats();
+        renderNotes();
         document.getElementById('body').value = '';
         setStatus('transmission successful', 'success');
-        prependNote(newNote);
-        document.getElementById('noteCount').textContent =
-          parseInt(document.getElementById('noteCount').textContent) + 1;
-        document.getElementById('latestDate').textContent = newNote.date.split(',')[0];
+        await commitNotes(`add note — ${getDate()}`);
       } catch (e) {
+        cachedNotes.shift(); // rollback
+        updateStats();
+        renderNotes();
         setStatus(e.message, 'error');
       } finally {
         btn.disabled = false;
       }
     }
 
-    function prependNote(n) {
-      const list = document.getElementById('recentList');
-      // re-index existing notes
-      list.querySelectorAll('.transmission').forEach(el => {
-        const oldIdx = parseInt(el.id.replace('note-', ''));
-        const newIdx = oldIdx + 1;
-        el.id = `note-${newIdx}`;
-        el.querySelector('.edit-btn').setAttribute('onclick', `editNote(${newIdx}, ${JSON.stringify(el.querySelector('.transmission-body').textContent)})`);
-        el.querySelector('.delete-btn').setAttribute('onclick', `deleteNote(${newIdx})`);
-        el.querySelector('.transmission-body').id = `body-${newIdx}`;
-        el.querySelector('.edit-btn').id = `edit-btn-${newIdx}`;
-      });
+    // ── delete ──
+    async function deleteNote(i) {
+      if (!confirm('delete this note?')) return;
+      const removed = cachedNotes.splice(i, 1)[0];
+      updateStats();
+      renderNotes();
+      setStatus('deleting...', 'pending');
+      try {
+        await commitNotes(`delete note — ${getDate()}`);
+        setStatus('note deleted', 'success');
+      } catch (e) {
+        cachedNotes.splice(i, 0, removed); // rollback
+        updateStats();
+        renderNotes();
+        setStatus(e.message, 'error');
+      }
+    }
 
-      const div = document.createElement('div');
-      div.className = 'transmission';
-      div.id = 'note-0';
-      div.innerHTML = `
-        <div class="transmission-text">
-          <div class="transmission-date">${n.date}</div>
-          <div class="transmission-body" id="body-0">${n.body}</div>
-        </div>
-        <div class="transmission-actions">
-          <button class="edit-btn" id="edit-btn-0" onclick="editNote(0, ${JSON.stringify(n.body)})">[ edit ]</button>
-          <button class="delete-btn" onclick="deleteNote(0)">[ x ]</button>
+    // ── edit ──
+    function startEdit(i) {
+      document.getElementById(`menu-${i}`).classList.remove('open');
+      const bodyEl = document.getElementById(`body-${i}`);
+      const original = cachedNotes[i].body;
+      bodyEl.innerHTML = `
+        <textarea class="edit-textarea" id="edit-input-${i}">${original}</textarea>
+        <div class="edit-actions">
+          <button class="edit-save"   onclick="saveEdit(${i})">[ save ]</button>
+          <button class="edit-cancel" onclick="renderNotes()">[ cancel ]</button>
         </div>
       `;
-      list.insertBefore(div, list.firstChild);
+      document.getElementById(`edit-input-${i}`).focus();
+    }
+
+    async function saveEdit(i) {
+      const newBody = document.getElementById(`edit-input-${i}`)?.value.trim();
+      if (!newBody) return setStatus('note body is empty', 'error');
+      const old = cachedNotes[i].body;
+      cachedNotes[i].body = newBody;
+      renderNotes();
+      setStatus('saving...', 'pending');
+      try {
+        await commitNotes(`edit note — ${getDate()}`);
+        setStatus('note updated', 'success');
+      } catch (e) {
+        cachedNotes[i].body = old; // rollback
+        renderNotes();
+        setStatus(e.message, 'error');
+      }
     }
 
     function setStatus(msg, type) {
