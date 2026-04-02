@@ -473,14 +473,47 @@
         });
         if (!put.ok) throw new Error('commit failed — check token permissions');
 
+        const newNote = { date: getDate(), body };
         document.getElementById('body').value = '';
         setStatus('transmission successful', 'success');
-        setTimeout(loadNotes, 3000);
+        prependNote(newNote);
+        document.getElementById('noteCount').textContent =
+          parseInt(document.getElementById('noteCount').textContent) + 1;
+        document.getElementById('latestDate').textContent = newNote.date.split(',')[0];
       } catch (e) {
         setStatus(e.message, 'error');
       } finally {
         btn.disabled = false;
       }
+    }
+
+    function prependNote(n) {
+      const list = document.getElementById('recentList');
+      // re-index existing notes
+      list.querySelectorAll('.transmission').forEach(el => {
+        const oldIdx = parseInt(el.id.replace('note-', ''));
+        const newIdx = oldIdx + 1;
+        el.id = `note-${newIdx}`;
+        el.querySelector('.edit-btn').setAttribute('onclick', `editNote(${newIdx}, ${JSON.stringify(el.querySelector('.transmission-body').textContent)})`);
+        el.querySelector('.delete-btn').setAttribute('onclick', `deleteNote(${newIdx})`);
+        el.querySelector('.transmission-body').id = `body-${newIdx}`;
+        el.querySelector('.edit-btn').id = `edit-btn-${newIdx}`;
+      });
+
+      const div = document.createElement('div');
+      div.className = 'transmission';
+      div.id = 'note-0';
+      div.innerHTML = `
+        <div class="transmission-text">
+          <div class="transmission-date">${n.date}</div>
+          <div class="transmission-body" id="body-0">${n.body}</div>
+        </div>
+        <div class="transmission-actions">
+          <button class="edit-btn" id="edit-btn-0" onclick="editNote(0, ${JSON.stringify(n.body)})">[ edit ]</button>
+          <button class="delete-btn" onclick="deleteNote(0)">[ x ]</button>
+        </div>
+      `;
+      list.insertBefore(div, list.firstChild);
     }
 
     function setStatus(msg, type) {
