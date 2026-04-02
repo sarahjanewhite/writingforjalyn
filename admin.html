@@ -404,6 +404,12 @@
       if (!token) return setStatus('no token — fill in github token first', 'error');
       if (!confirm('delete this note?')) return;
 
+      // remove from screen immediately
+      const el = document.getElementById(`note-${idx}`);
+      if (el) el.remove();
+      document.getElementById('noteCount').textContent =
+        parseInt(document.getElementById('noteCount').textContent) - 1;
+
       setStatus('deleting...', 'pending');
       try {
         const res = await fetch(API, {
