@@ -155,42 +155,33 @@
     .transmission-date { font-size: 10px; color: var(--dimamber); letter-spacing: 0.1em; margin-bottom: 0.3rem; }
     .transmission-body { font-size: 13px; color: var(--amber); line-height: 1.5; }
 
-    .menu-btn {
-      background: none;
-      border: 1px solid var(--darkamber);
-      color: var(--dimamber);
-      font-family: 'Share Tech Mono', 'Courier New', monospace;
-      font-size: 11px;
-      padding: 3px 7px;
-      cursor: pointer;
-      letter-spacing: 0.1em;
+    .note-controls {
+      display: flex;
+      gap: 0.4rem;
       flex-shrink: 0;
-      transition: border-color 0.15s, color 0.15s;
+      align-items: flex-start;
     }
-    .menu-btn:hover { border-color: var(--amber); color: var(--amber); }
 
-    .note-menu {
-      display: none;
-      gap: 0.5rem;
-      margin-top: 0.6rem;
-      padding-top: 0.6rem;
-      border-top: 1px solid var(--darkamber);
-    }
-    .note-menu.open { display: flex; }
-
-    .menu-action {
+    .menu-btn, .menu-action {
       background: none;
-      border: 1px solid var(--darkamber);
-      color: var(--dimamber);
+      border: none;
       font-family: 'Share Tech Mono', 'Courier New', monospace;
       font-size: 11px;
-      padding: 3px 10px;
+      padding: 0;
       cursor: pointer;
-      letter-spacing: 0.1em;
-      transition: border-color 0.15s, color 0.15s;
+      letter-spacing: 0.08em;
+      transition: color 0.15s;
     }
-    .menu-action.do-edit:hover  { border-color: var(--amber); color: var(--amber); }
-    .menu-action.do-delete:hover { border-color: #ff4444; color: #ff4444; }
+
+    .menu-btn { color: var(--dimamber); }
+    .menu-btn:hover { color: var(--amber); }
+
+    .menu-action { display: none; color: var(--amber); }
+    .menu-action.visible { display: inline; }
+    .menu-action.do-delete:hover { color: #ff4444; }
+
+    .menu-sep { color: var(--darkamber); font-size: 11px; display: none; }
+    .menu-sep.visible { display: inline; }
 
     .edit-textarea {
       width: 100%;
@@ -310,11 +301,13 @@
               <div class="transmission-date">${n.date}</div>
               <div class="transmission-body" id="body-${i}">${n.body}</div>
             </div>
-            <button class="menu-btn" onclick="toggleMenu(${i})">[ ... ]</button>
-          </div>
-          <div class="note-menu" id="menu-${i}">
-            <button class="menu-action do-edit"   onclick="startEdit(${i})">edit</button>
-            <button class="menu-action do-delete" onclick="deleteNote(${i})">delete</button>
+            <div class="note-controls" id="controls-${i}">
+              <button class="menu-btn" id="menu-btn-${i}" onclick="toggleMenu(${i})">[ ... ]</button>
+              <span class="menu-sep" id="sep-${i}">|</span>
+              <button class="menu-action do-edit"   id="edit-action-${i}"   onclick="startEdit(${i})">edit</button>
+              <span class="menu-sep" id="sep2-${i}">|</span>
+              <button class="menu-action do-delete" id="delete-action-${i}" onclick="deleteNote(${i})">delete</button>
+            </div>
           </div>
         `;
         list.appendChild(div);
@@ -322,11 +315,19 @@
     }
 
     function toggleMenu(i) {
-      // close all other menus first
-      document.querySelectorAll('.note-menu').forEach((m, idx) => {
-        if (idx !== i) m.classList.remove('open');
-      });
-      document.getElementById(`menu-${i}`).classList.toggle('open');
+      const isOpen = document.getElementById(`edit-action-${i}`).classList.contains('visible');
+      // close all
+      document.querySelectorAll('.menu-action').forEach(el => el.classList.remove('visible'));
+      document.querySelectorAll('.menu-sep').forEach(el => el.classList.remove('visible'));
+      document.querySelectorAll('.menu-btn').forEach(el => { el.textContent = '[ ... ]'; });
+      // open this one if it wasn't already open
+      if (!isOpen) {
+        document.getElementById(`edit-action-${i}`).classList.add('visible');
+        document.getElementById(`delete-action-${i}`).classList.add('visible');
+        document.getElementById(`sep-${i}`).classList.add('visible');
+        document.getElementById(`sep2-${i}`).classList.add('visible');
+        document.getElementById(`menu-btn-${i}`).textContent = '[ x ]';
+      }
     }
 
     // ── load from GitHub ──
