@@ -48,11 +48,6 @@ document.addEventListener('visibilitychange', () => {
 setInterval(fetchNotes, 5 * 60 * 1000);
 
 // -------------------------
-//  Day counter
-// -------------------------
-
-
-// -------------------------
 //  Note loading & navigation
 // -------------------------
 
@@ -101,7 +96,6 @@ function changeNote(dir) {
 // -------------------------
 //  Envelope open / close
 // -------------------------
-
 
 let busy = false;
 
