@@ -62,6 +62,14 @@ function loadNote(idx) {
   const n = notes[idx];
   document.getElementById('noteBody').textContent = n.body;
   document.getElementById('noteDate').textContent = n.date;
+  const imgEl = document.getElementById('noteImage');
+  if (n.image) {
+    imgEl.src = n.image;
+    imgEl.style.display = 'block';
+  } else {
+    imgEl.src = '';
+    imgEl.style.display = 'none';
+  }
 
   const total = notes.length;
   const nav = document.getElementById('noteNav');

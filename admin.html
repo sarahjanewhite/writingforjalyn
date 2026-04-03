@@ -231,6 +231,28 @@
     .edit-cancel:hover { border-color: #ff4444; color: #ff4444; }
 
     .empty { color: var(--dimamber); font-size: 12px; }
+
+    .image-pick-row {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      margin-bottom: 1.4rem;
+    }
+    .image-pick-btn {
+      flex-shrink: 0;
+      background: none;
+      border: 1px solid var(--darkamber);
+      color: var(--dimamber);
+      font-family: 'Share Tech Mono', 'Courier New', monospace;
+      font-size: 11px;
+      padding: 4px 10px;
+      cursor: pointer;
+      letter-spacing: 0.1em;
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .image-pick-btn:hover, .image-pick-btn.picked { border-color: var(--amber); color: var(--amber); }
+    .image-pick-name { font-size: 11px; color: var(--dimamber); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .thumb { width: 100%; max-height: 70px; object-fit: cover; margin-bottom: 0.5rem; opacity: 0.65; }
   </style>
 </head>
 <body>
@@ -262,6 +284,12 @@
       <input type="password" id="token" placeholder="ghp_..." autocomplete="off" />
       <label>message body</label>
       <textarea id="body" placeholder="write something..."></textarea>
+      <label>photo (optional)</label>
+      <input type="file" id="imageInput" accept="image/*" style="display:none" onchange="handleImagePick(this)" />
+      <div class="image-pick-row">
+        <button type="button" class="image-pick-btn" id="imagePickBtn" onclick="document.getElementById('imageInput').click()">[ attach photo ]</button>
+        <span class="image-pick-name" id="imagePickName"></span>
+      </div>
       <button class="submit-btn" id="submitBtn" onclick="submitNote()">[ transmit ]</button>
       <div class="status" id="status"></div>
     </div>
@@ -314,6 +342,7 @@
           <div class="transmission-row">
             <div class="transmission-text">
               <div class="transmission-date">${n.date}</div>
+              ${n.image ? `<img class="thumb" src="${n.image}" alt="" />` : ''}
               <div class="transmission-body" id="body-${i}">${n.body}</div>
             </div>
             <div class="note-controls" id="controls-${i}">
@@ -387,6 +416,37 @@
       if (!put.ok) throw new Error('commit failed — check token permissions');
     }
 
+    // ── image upload ──
+    let pendingImageFile = null;
+
+    function handleImagePick(input) {
+      const file = input.files[0];
+      if (!file) return;
+      pendingImageFile = file;
+      document.getElementById('imagePickName').textContent = file.name;
+      document.getElementById('imagePickBtn').classList.add('picked');
+    }
+
+    async function uploadImage(file) {
+      const form = new FormData();
+      form.append('file', file);
+      form.append('upload_preset', 'writingforjalyn');
+      const res = await fetch('https://api.cloudinary.com/v1_1/dtggzaknr/image/upload', {
+        method: 'POST',
+        body: form
+      });
+      if (!res.ok) throw new Error('image upload failed');
+      const data = await res.json();
+      return data.secure_url;
+    }
+
+    function clearImagePicker() {
+      pendingImageFile = null;
+      document.getElementById('imageInput').value = '';
+      document.getElementById('imagePickName').textContent = '';
+      document.getElementById('imagePickBtn').classList.remove('picked');
+    }
+
     // ── transmit ──
     function getDate() {
       const months = ['January','February','March','April','May','June',
@@ -400,22 +460,30 @@
       const body  = document.getElementById('body').value.trim();
       const btn   = document.getElementById('submitBtn');
       if (!token) return setStatus('no token provided', 'error');
-      if (!body)  return setStatus('message body is empty', 'error');
+      if (!body && !pendingImageFile) return setStatus('message body is empty', 'error');
 
       localStorage.setItem('sj_gh_token', token);
       btn.disabled = true;
-      setStatus('transmitting...', 'pending');
+      let noteAdded = false;
       try {
-        cachedNotes.unshift({ date: getDate(), body });
+        let imageUrl = null;
+        if (pendingImageFile) {
+          setStatus('uploading image...', 'pending');
+          imageUrl = await uploadImage(pendingImageFile);
+        }
+        setStatus('transmitting...', 'pending');
+        const note = { date: getDate(), body };
+        if (imageUrl) note.image = imageUrl;
+        cachedNotes.unshift(note);
+        noteAdded = true;
         updateStats();
         renderNotes();
         document.getElementById('body').value = '';
-        setStatus('transmission successful', 'success');
+        clearImagePicker();
         await commitNotes(`add note — ${getDate()}`);
+        setStatus('transmission successful', 'success');
       } catch (e) {
-        cachedNotes.shift(); // rollback
-        updateStats();
-        renderNotes();
+        if (noteAdded) { cachedNotes.shift(); updateStats(); renderNotes(); }
         setStatus(e.message, 'error');
       } finally {
         btn.disabled = false;

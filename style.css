@@ -279,6 +279,14 @@ body::before {
   overflow-wrap: break-word;
 }
 
+.note-image {
+  width: 100%;
+  border-radius: 3px;
+  display: none;
+  margin-bottom: 1.2rem;
+  object-fit: cover;
+}
+
 .note-sign {
   font-family: 'Caveat', cursive;
   font-size: 23px;
