@@ -66,6 +66,15 @@ function loadNote(idx) {
     imgEl.style.display = 'none';
   }
 
+  const musicEl = document.getElementById('noteMusic');
+  if (n.music) {
+    musicEl.src = n.music;
+    musicEl.style.display = 'block';
+  } else {
+    musicEl.src = '';
+    musicEl.style.display = 'none';
+  }
+
   const total = notes.length;
   const nav = document.getElementById('noteNav');
   if (total > 1) {

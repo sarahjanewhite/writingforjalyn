@@ -287,6 +287,15 @@ body::before {
   object-fit: cover;
 }
 
+.note-music {
+  width: 100%;
+  height: 175px;
+  border-radius: 10px;
+  display: none;
+  margin-bottom: 1.2rem;
+  border: none;
+}
+
 .note-sign {
   font-family: 'Caveat', cursive;
   font-size: 23px;

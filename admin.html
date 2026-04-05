@@ -46,6 +46,8 @@
         <button type="button" class="image-pick-btn" id="imagePickBtn" onclick="document.getElementById('imageInput').click()">[ attach photo ]</button>
         <span class="image-pick-name" id="imagePickName"></span>
       </div>
+      <label>apple music link (optional)</label>
+      <input type="url" id="musicInput" placeholder="https://music.apple.com/..." autocomplete="off" />
       <button class="submit-btn" id="submitBtn" onclick="submitNote()">[ transmit ]</button>
       <div class="status" id="status"></div>
     </div>
@@ -203,6 +205,16 @@
       document.getElementById('imagePickBtn').classList.remove('picked');
     }
 
+    // ── apple music ──
+    function toAppleMusicEmbed(url) {
+      try {
+        const u = new URL(url);
+        if (!u.hostname.includes('music.apple.com')) return null;
+        u.hostname = 'embed.music.apple.com';
+        return u.toString();
+      } catch { return null; }
+    }
+
     // ── transmit ──
     function getDate() {
       const months = ['January','February','March','April','May','June',
@@ -215,8 +227,11 @@
       const token = tokenEl.value.trim();
       const body  = document.getElementById('body').value.trim();
       const btn   = document.getElementById('submitBtn');
+      const musicRaw = document.getElementById('musicInput').value.trim();
+      const musicEmbed = musicRaw ? toAppleMusicEmbed(musicRaw) : null;
+      if (musicRaw && !musicEmbed) return setStatus('invalid apple music link', 'error');
       if (!token) return setStatus('no token provided', 'error');
-      if (!body && !pendingImageFile) return setStatus('message body is empty', 'error');
+      if (!body && !pendingImageFile && !musicEmbed) return setStatus('message body is empty', 'error');
 
       localStorage.setItem('sj_gh_token', token);
       btn.disabled = true;
@@ -230,11 +245,13 @@
         setStatus('transmitting...', 'pending');
         const note = { date: getDate(), body };
         if (imageUrl) note.image = imageUrl;
+        if (musicEmbed) note.music = musicEmbed;
         cachedNotes.unshift(note);
         noteAdded = true;
         updateStats();
         renderNotes();
         document.getElementById('body').value = '';
+        document.getElementById('musicInput').value = '';
         clearImagePicker();
         await commitNotes(`add note — ${getDate()}`);
         setStatus('transmission successful', 'success');
