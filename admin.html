@@ -14,46 +14,54 @@
 <body>
 
   <div class="titlebar">
-    <span>admin_console</span>
-    <span class="titlebar-title" id="clock"><span class="blink">_</span></span>
+    <div class="titlebar-left">
+      <span class="titlebar-callsign">WFJ // UPLINK CONTROL</span>
+      <span class="titlebar-sub">MISSION OPERATIONS CENTER &nbsp;◈&nbsp; ACTIVE</span>
+    </div>
+    <div class="titlebar-right">
+      <span class="titlebar-clock" id="clock"><span class="blink">_</span></span>
+      <span class="titlebar-utc">MET / LOCAL</span>
+    </div>
   </div>
 
   <div class="grid">
 
     <div class="panel">
-      <div class="panel-header">system stats</div>
+      <div class="panel-header">telemetry <span class="panel-status nominal"></span></div>
       <div class="stats">
         <div>
-          <div class="stat-label">notes on file</div>
+          <div class="stat-label">uplinks logged</div>
           <div class="stat-value" id="noteCount">—</div>
+          <div class="stat-unit">TRANSMISSIONS</div>
         </div>
         <div>
-          <div class="stat-label">latest</div>
+          <div class="stat-label">last uplink</div>
           <div class="stat-value" id="latestDate">—</div>
+          <div class="stat-unit">DATE</div>
         </div>
       </div>
     </div>
 
     <div class="panel">
-      <div class="panel-header">transmit new note</div>
-      <label>github token</label>
+      <div class="panel-header">uplink composer</div>
+      <label>auth token</label>
       <input type="password" id="token" placeholder="ghp_..." autocomplete="off" />
-      <label>message body</label>
-      <textarea id="body" placeholder="write something..."></textarea>
-      <label>photo (optional)</label>
+      <label>payload</label>
+      <textarea id="body" placeholder="compose transmission..."></textarea>
+      <label>visual payload (optional)</label>
       <input type="file" id="imageInput" accept="image/*" style="display:none" onchange="handleImagePick(this)" />
       <div class="image-pick-row">
         <button type="button" class="image-pick-btn" id="imagePickBtn" onclick="document.getElementById('imageInput').click()">[ attach photo ]</button>
         <span class="image-pick-name" id="imagePickName"></span>
       </div>
-      <label>apple music link (optional)</label>
+      <label>audio uplink (optional)</label>
       <input type="url" id="musicInput" placeholder="https://music.apple.com/..." autocomplete="off" />
-      <button class="submit-btn" id="submitBtn" onclick="submitNote()">[ transmit ]</button>
+      <button class="submit-btn" id="submitBtn" onclick="submitNote()">[ uplink ]</button>
       <div class="status" id="status"></div>
     </div>
 
     <div class="panel">
-      <div class="panel-header">recent transmissions</div>
+      <div class="panel-header">uplink log</div>
       <div id="recentList"><span class="empty">loading...</span></div>
     </div>
 
@@ -239,10 +247,10 @@
       try {
         let imageUrl = null;
         if (pendingImageFile) {
-          setStatus('uploading image...', 'pending');
+          setStatus('uploading visual payload...', 'pending');
           imageUrl = await uploadImage(pendingImageFile);
         }
-        setStatus('transmitting...', 'pending');
+        setStatus('uplink in progress...', 'pending');
         const note = { date: getDate(), body };
         if (imageUrl) note.image = imageUrl;
         if (musicEmbed) note.music = musicEmbed;
@@ -254,7 +262,7 @@
         document.getElementById('musicInput').value = '';
         clearImagePicker();
         await commitNotes(`add note — ${getDate()}`);
-        setStatus('transmission successful', 'success');
+        setStatus('uplink confirmed', 'success');
       } catch (e) {
         if (noteAdded) { cachedNotes.shift(); updateStats(); renderNotes(); }
         setStatus(e.message, 'error');
@@ -269,10 +277,10 @@
       const removed = cachedNotes.splice(i, 1)[0];
       updateStats();
       renderNotes();
-      setStatus('deleting...', 'pending');
+      setStatus('purging record...', 'pending');
       try {
         await commitNotes(`delete note — ${getDate()}`);
-        setStatus('note deleted', 'success');
+        setStatus('record purged', 'success');
       } catch (e) {
         cachedNotes.splice(i, 0, removed); // rollback
         updateStats();
@@ -302,10 +310,10 @@
       const old = cachedNotes[i].body;
       cachedNotes[i].body = newBody;
       renderNotes();
-      setStatus('saving...', 'pending');
+      setStatus('patching record...', 'pending');
       try {
         await commitNotes(`edit note — ${getDate()}`);
-        setStatus('note updated', 'success');
+        setStatus('record patched', 'success');
       } catch (e) {
         cachedNotes[i].body = old; // rollback
         renderNotes();
