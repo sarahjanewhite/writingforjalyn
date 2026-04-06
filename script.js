@@ -4,7 +4,7 @@ function setUnreadIndicator(hasUnread) {
   document.getElementById('envWrap').classList.toggle('has-unread', hasUnread);
   const hint = document.getElementById('hint');
   if (hint && !hint.classList.contains('hidden')) {
-    hint.textContent = hasUnread ? 'new note from sj ♡' : 'a letter from across the stars ♡';
+    hint.textContent = hasUnread ? 'new note from sj ♡' : 'tap to open ♡';
   }
 }
 
@@ -13,7 +13,7 @@ function markAsRead() {
   if (newest) localStorage.setItem('sj_last_read', newest.body);
   document.getElementById('envWrap').classList.remove('has-unread');
   const hint = document.getElementById('hint');
-  if (hint) hint.textContent = 'a letter from across the stars ♡';
+  if (hint) hint.textContent = 'tap to open ♡';
 }
 
 function fetchNotes() {
@@ -164,97 +164,8 @@ function saveNote() {
 //  Falling hearts
 // -------------------------
 
-// ── star field background ──
-(function () {
-  const canvas = document.getElementById('starBg');
-  const ctx    = canvas.getContext('2d');
-  const COUNT  = 220;
-  let stars    = [];
-
-  function rand(a, b) { return a + Math.random() * (b - a); }
-
-  function resize() {
-    canvas.width  = window.innerWidth;
-    canvas.height = window.innerHeight;
-  }
-  resize();
-  window.addEventListener('resize', () => { resize(); build(); });
-
-  function build() {
-    stars = [];
-    for (let i = 0; i < COUNT; i++) {
-      stars.push({
-        x:      rand(0, canvas.width),
-        y:      rand(0, canvas.height),
-        r:      rand(0.2, 1.3),
-        base:   rand(0.15, 0.7),
-        speed:  rand(0.3, 1.4),
-        offset: rand(0, Math.PI * 2),
-        hue:    Math.random() < 0.15 ? 'lavender' : Math.random() < 0.12 ? 'gold' : 'white',
-      });
-    }
-  }
-  build();
-
-  let shooters = [];
-  let lastShoot = 0;
-  const SHOOT_MS = 4000;
-
-  function spawnShooter() {
-    shooters.push({
-      x: rand(canvas.width * 0.05, canvas.width * 0.85),
-      y: rand(0, canvas.height * 0.35),
-      len:   rand(80, 140),
-      speed: rand(6, 11),
-      angle: rand(22, 38) * Math.PI / 180,
-      life:  1,
-      decay: rand(0.02, 0.032),
-    });
-  }
-
-  function frame(ts) {
-    requestAnimationFrame(frame);
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    const t = ts / 1000;
-
-    for (const s of stars) {
-      const alpha = Math.max(0, s.base + Math.sin(t * s.speed + s.offset) * 0.22);
-      const color = s.hue === 'lavender'
-        ? `rgba(190,170,255,${alpha})`
-        : s.hue === 'gold'
-        ? `rgba(255,235,160,${alpha})`
-        : `rgba(220,230,255,${alpha})`;
-      ctx.beginPath();
-      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-      ctx.fillStyle = color;
-      ctx.fill();
-    }
-
-    if (ts - lastShoot > SHOOT_MS) { spawnShooter(); lastShoot = ts; }
-    shooters = shooters.filter(s => s.life > 0);
-    for (const s of shooters) {
-      const tx = s.x + Math.cos(s.angle) * s.len;
-      const ty = s.y + Math.sin(s.angle) * s.len;
-      const g = ctx.createLinearGradient(s.x, s.y, tx, ty);
-      g.addColorStop(0, 'rgba(255,255,255,0)');
-      g.addColorStop(0.5, `rgba(210,200,255,${s.life * 0.6})`);
-      g.addColorStop(1, `rgba(255,255,255,${s.life})`);
-      ctx.beginPath();
-      ctx.moveTo(s.x, s.y);
-      ctx.lineTo(tx, ty);
-      ctx.strokeStyle = g;
-      ctx.lineWidth = 1.1;
-      ctx.stroke();
-      s.x += Math.cos(s.angle) * s.speed;
-      s.y += Math.sin(s.angle) * s.speed;
-      s.life -= s.decay;
-    }
-  }
-  requestAnimationFrame(frame);
-})();
-
 const heartsCanvas = document.getElementById('heartsCanvas');
-const colors = ['#e8e0ff','#d8ccff','#f0e8ff','#fff0f8','#c8c0f0','#ffe8f8'];
+const colors = ['#f5b8c8','#f9c8d4','#f0a8b8','#fcd0dc','#e8a0b4','#f4c0cc'];
 
 const hearts = [];
 for (let i = 0; i < 55; i++) {

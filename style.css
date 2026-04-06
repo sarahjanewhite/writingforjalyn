@@ -9,7 +9,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(160deg, #04040f 0%, #090620 50%, #060212 100%);
+  background: linear-gradient(160deg, #fdf0eb 0%, #fce8f0 50%, #f9e4e8 100%);
   font-family: 'Caveat', cursive;
 }
 
@@ -18,23 +18,9 @@ body::before {
   position: fixed;
   inset: 0;
   background-image:
-    radial-gradient(circle at 20% 20%, rgba(120, 80, 200, 0.08) 0%, transparent 55%),
-    radial-gradient(circle at 80% 75%, rgba(60, 100, 200, 0.07) 0%, transparent 55%);
+    radial-gradient(circle at 20% 20%, rgba(255, 200, 200, 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(255, 180, 210, 0.12) 0%, transparent 50%);
   pointer-events: none;
-}
-
-#starBg {
-  position: fixed;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 0;
-}
-
-.scene {
-  position: relative;
-  z-index: 1;
 }
 
 .scene {
@@ -97,7 +83,7 @@ body::before {
 }
 
 .envelope-wrap.has-unread {
-  filter: drop-shadow(0 0 18px rgba(160, 120, 255, 0.9)) drop-shadow(0 0 36px rgba(100, 160, 255, 0.5));
+  filter: drop-shadow(0 0 18px rgba(196, 96, 112, 0.8)) drop-shadow(0 0 32px rgba(196, 96, 112, 0.4));
 }
 
 .env-svg { width: 100%; display: block; }
@@ -185,7 +171,7 @@ body::before {
   font-family: 'Cormorant Garamond', serif;
   font-style: italic;
   font-size: 14px;
-  color: #b8a4e8;
+  color: #c4967a;
   margin-top: 1.6rem;
   letter-spacing: 0.06em;
   z-index: 10;
@@ -331,7 +317,7 @@ body::before {
   background: none;
   border: none;
   font-size: 16px;
-  color: #a090d8;
+  color: #c4967a;
   cursor: pointer;
   padding: 0 4px;
   transition: opacity 0.2s;
@@ -344,7 +330,7 @@ body::before {
   font-family: 'Cormorant Garamond', serif;
   font-style: italic;
   font-size: 12px;
-  color: #b8a4e8;
+  color: #d4b090;
   letter-spacing: 0.04em;
 }
 
@@ -353,7 +339,7 @@ body::before {
   font-family: 'Cormorant Garamond', serif;
   font-style: italic;
   font-size: 11px;
-  color: #b8a4e8;
+  color: #d4b090;
   text-align: center;
   letter-spacing: 0.04em;
 }
@@ -390,13 +376,13 @@ body::before {
 
 .save-btn {
   background: none;
-  border: 1.5px solid #a090d8;
-  color: #b8a4e8;
+  border: 1.5px solid #c4967a;
+  color: #c4967a;
 }
 
 .reply-btn {
-  background: #7060b0;
-  border: 1.5px solid #8070c0;
+  background: #c4967a;
+  border: 1.5px solid #c4967a;
   color: #fffef5;
 }
 
