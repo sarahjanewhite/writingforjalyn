@@ -13,6 +13,8 @@
 </head>
 <body>
 
+  <canvas id="starCanvas"></canvas>
+
   <div class="titlebar">
     <div class="titlebar-left">
       <span class="titlebar-callsign">WFJ // UPLINK CONTROL</span>
@@ -326,6 +328,104 @@
       el.textContent = msg;
       el.className = `status ${type}`;
     }
+
+    // ── star field ──
+    (function () {
+      const canvas = document.getElementById('starCanvas');
+      const ctx    = canvas.getContext('2d');
+
+      const STAR_COUNT   = 200;
+      const SHOOT_EVERY  = 3200; // ms between shooting stars
+
+      let stars = [];
+      let shooters = [];
+      let lastShoot = 0;
+
+      function resize() {
+        canvas.width  = window.innerWidth;
+        canvas.height = window.innerHeight;
+      }
+      resize();
+      window.addEventListener('resize', () => { resize(); buildStars(); });
+
+      function rand(min, max) { return min + Math.random() * (max - min); }
+
+      function buildStars() {
+        stars = [];
+        for (let i = 0; i < STAR_COUNT; i++) {
+          stars.push({
+            x:      rand(0, canvas.width),
+            y:      rand(0, canvas.height),
+            r:      rand(0.3, 1.4),
+            base:   rand(0.2, 0.75),   // base opacity
+            speed:  rand(0.4, 1.6),    // twinkle speed
+            offset: rand(0, Math.PI * 2),
+            cyan:   Math.random() < 0.18, // ~18% cyan, rest white
+          });
+        }
+      }
+      buildStars();
+
+      function spawnShooter() {
+        const startX = rand(canvas.width * 0.1, canvas.width * 0.9);
+        const startY = rand(0, canvas.height * 0.4);
+        shooters.push({
+          x: startX, y: startY,
+          len: rand(90, 160),
+          speed: rand(7, 13),
+          angle: rand(25, 40) * Math.PI / 180, // downward-right
+          life: 1,
+          decay: rand(0.018, 0.028),
+        });
+      }
+
+      let last = 0;
+      function draw(ts) {
+        requestAnimationFrame(draw);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // twinkling stars
+        const t = ts / 1000;
+        for (const s of stars) {
+          const osc = Math.sin(t * s.speed + s.offset);
+          const alpha = Math.max(0, s.base + osc * 0.25);
+          ctx.beginPath();
+          ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+          ctx.fillStyle = s.cyan
+            ? `rgba(0,200,255,${alpha})`
+            : `rgba(220,235,255,${alpha})`;
+          ctx.fill();
+        }
+
+        // spawn shooting star
+        if (ts - lastShoot > SHOOT_EVERY) {
+          spawnShooter();
+          lastShoot = ts;
+        }
+
+        // draw & update shooting stars
+        shooters = shooters.filter(s => s.life > 0);
+        for (const s of shooters) {
+          const tx = s.x + Math.cos(s.angle) * s.len;
+          const ty = s.y + Math.sin(s.angle) * s.len;
+          const grad = ctx.createLinearGradient(s.x, s.y, tx, ty);
+          grad.addColorStop(0, `rgba(255,255,255,0)`);
+          grad.addColorStop(0.6, `rgba(200,235,255,${s.life * 0.7})`);
+          grad.addColorStop(1, `rgba(255,255,255,${s.life})`);
+          ctx.beginPath();
+          ctx.moveTo(s.x, s.y);
+          ctx.lineTo(tx, ty);
+          ctx.strokeStyle = grad;
+          ctx.lineWidth = 1.2;
+          ctx.stroke();
+
+          s.x += Math.cos(s.angle) * s.speed;
+          s.y += Math.sin(s.angle) * s.speed;
+          s.life -= s.decay;
+        }
+      }
+      requestAnimationFrame(draw);
+    })();
   </script>
 </body>
 </html>
